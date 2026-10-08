@@ -100,6 +100,27 @@ async function hydrate(a) {
 }
 
 // ═══════════════════════════════════════════
+//  网易云账号信息
+//  Cookie 可能是上次扫码留下的，重启后 profile 是空的，
+//  这里按需补拉一次，界面才能显示昵称而不是笼统的「已登录」。
+// ═══════════════════════════════════════════
+let profilePromise = null;
+function ensureProfile() {
+  if (!neteaseCookie) return Promise.resolve(null);
+  if (neteaseProfile) return Promise.resolve(neteaseProfile);
+  if (!profilePromise) {
+    profilePromise = netease.login_status({ cookie: neteaseCookie, proxy: PROXY })
+      .then(r => {
+        neteaseProfile = (r.body && r.body.data && r.body.data.profile) || null;
+        return neteaseProfile;
+      })
+      .catch(() => null)
+      .then(p => { profilePromise = null; return p; });
+  }
+  return profilePromise;
+}
+
+// ═══════════════════════════════════════════
 //  专辑匹配（手工清单 × 网易云实际专辑）
 // ═══════════════════════════════════════════
 // 未匹配上的专辑会打日志，而不是静默丢弃
@@ -277,6 +298,7 @@ async function handleAPI(req, res) {
 
   // 登录状态
   if (route === '/api/login/status') {
+    if (neteaseCookie && !neteaseProfile) await ensureProfile();
     json(res, 200, { loggedIn: !!neteaseCookie, nickname: neteaseProfile && neteaseProfile.nickname });
     return;
   }
@@ -340,6 +362,12 @@ server.listen(PORT, () => {
   const albums = ARTISTS.reduce((n, a) => n + a.albums.length, 0);
   console.log('Server: http://localhost:' + PORT);
   console.log('艺人 ' + ARTISTS.length + ' 位 · 专辑 ' + albums + ' 张（来自 artists.json）');
-  console.log('网易云登录：' + (neteaseCookie ? '已登录' : '未登录'));
   if (PROXY) console.log('代理：' + PROXY);
+  if (!neteaseCookie) {
+    console.log('网易云登录：未登录（点右上角扫码）');
+  } else {
+    ensureProfile().then(p => {
+      console.log('网易云登录：' + (p && p.nickname ? p.nickname : '已登录（用户信息拉取失败）'));
+    });
+  }
 });
