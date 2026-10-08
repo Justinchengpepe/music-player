@@ -1,0 +1,430 @@
+{
+  "artists": [
+    {
+      "id": "37520",
+      "name": "Kanye West",
+      "albums": [
+        "The College Dropout",
+        "Late Registration",
+        "Graduation",
+        "808s & Heartbreak",
+        "My Beautiful Dark Twisted Fantasy",
+        "Watch The Throne",
+        "Yeezus",
+        "The Life of Pablo",
+        "ye",
+        "KIDS SEE GHOSTS",
+        "JESUS IS KING",
+        "Donda",
+        "Vultures 1",
+        "Vultures 2",
+        "BULLY - DELUXE"
+      ],
+      "color": "#d4a853",
+      "itunesId": 2715720,
+      "avatar": "https://p3.music.126.net/P0W5NL1WOiUTKww9DJaNpA==/109951169505042939.jpg?param=300y300"
+    },
+    {
+      "id": "53283",
+      "name": "Drake",
+      "albums": [
+        "Thank Me Later",
+        "Take Care",
+        "Nothing Was the Same",
+        "Views",
+        "More Life",
+        "Scorpion",
+        "Certified Lover Boy",
+        "Honestly, Nevermind",
+        "Her Loss",
+        "For All The Dogs",
+        "$ome $exy $ongs 4 U"
+      ],
+      "color": "#4a90d9",
+      "itunesId": 271256,
+      "avatar": "https://p3.music.126.net/IYf_pG2T5Ld89EqdIrr5cw==/109951172373878970.jpg?param=300y300"
+    },
+    {
+      "id": "44708",
+      "name": "Tyler, the Creator",
+      "albums": [
+        "Goblin",
+        "Wolf",
+        "Cherry Bomb",
+        "Flower Boy",
+        "IGOR",
+        "CALL ME IF YOU GET LOST",
+        "CHROMAKOPIA"
+      ],
+      "color": "#2ecc71",
+      "itunesId": 420368335,
+      "avatar": "https://p4.music.126.net/ddcTNGUZKBpIGQS8JowElQ==/109951171890677615.jpg?param=300y300"
+    },
+    {
+      "id": "33727",
+      "name": "Frank Ocean",
+      "albums": [
+        "Nostalgia, Ultra",
+        "channel ORANGE",
+        "Endless",
+        "Blonde"
+      ],
+      "color": "#e67e22",
+      "itunesId": 442122051,
+      "avatar": "https://p3.music.126.net/Lx76q7pwpFIlK2HvFHbQ-A==/109951168299107625.jpg?param=300y300"
+    },
+    {
+      "id": "1021293",
+      "name": "Daniel Caesar",
+      "albums": [
+        "Pilgrim's Paradise",
+        "Freudian",
+        "Case Study 01",
+        "NEVER ENOUGH",
+        "Son Of Spergy"
+      ],
+      "color": "#9b8ec4",
+      "itunesId": 1019899019,
+      "avatar": "https://p4.music.126.net/fjQ50mbu7inIjr4DXaSTHA==/109951172201677466.jpg?param=300y300"
+    },
+    {
+      "id": "737012",
+      "name": "Travis Scott",
+      "albums": [
+        "Days Before Rodeo",
+        "Rodeo",
+        "Birds In The Trap Sing McKnight",
+        "ASTROWORLD",
+        "UTOPIA"
+      ],
+      "color": "#a83232",
+      "itunesId": 549236696,
+      "avatar": "https://p4.music.126.net/y_Ew2QXqvWvyY01IeDjUbg==/109951169806256554.jpg?param=300y300"
+    },
+    {
+      "id": "37995",
+      "name": "Kendrick Lamar",
+      "albums": [
+        "Section.80",
+        "good kid, m.A.A.d city",
+        "To Pimp a Butterfly",
+        "untitled unmastered.",
+        "DAMN.",
+        "Mr. Morale & The Big Steppers",
+        "GNX"
+      ],
+      "color": "#2c3e50",
+      "itunesId": 368183298,
+      "avatar": "https://p3.music.126.net/Kp4w_qOKkRVi77bdn2hfjg==/109951170181165907.jpg?param=300y300"
+    },
+    {
+      "id": "90075",
+      "name": "Blood Orange",
+      "albums": [
+        "Coastal Grooves",
+        "Cupid Deluxe",
+        "Freetown Sound",
+        "Negro Swan",
+        "Essex Honey"
+      ],
+      "color": "#e65a3a",
+      "itunesId": 440698865,
+      "avatar": "https://p3.music.126.net/65ELHhvUGT0nR2PJiOhMDg==/109951165181255219.jpg?param=300y300"
+    },
+    {
+      "id": "29100",
+      "name": "ASAP Rocky",
+      "albums": [
+        "LIVE.LOVE.A$AP",
+        "LONG.LIVE.A$AP",
+        "AT.LONG.LAST.A$AP",
+        "TESTING",
+        "Don't Be Dumb"
+      ],
+      "color": "#7a5ba0",
+      "itunesId": 481488005,
+      "avatar": "https://p3.music.126.net/M_Q4vd42GaCQffaj4gEDLw==/109951169914178107.jpg?param=300y300"
+    },
+    {
+      "id": "12062134",
+      "name": "21 Savage",
+      "albums": [
+        "Issa Album",
+        "i am > i was",
+        "SAVAGE MODE II",
+        "american dream",
+        "WHAT HAPPENED TO THE STREETS?"
+      ],
+      "color": "#4a6b3a",
+      "itunesId": 894820464,
+      "avatar": "https://p4.music.126.net/P7lzSpRMei_91wu3JaWTlw==/109951168930766214.jpg?param=300y300"
+    },
+    {
+      "id": "14253161",
+      "name": "Don Toliver",
+      "albums": [
+        "Heaven Or Hell",
+        "Life of a DON",
+        "Love Sick",
+        "HARDSTONE PSYCHO",
+        "OCTANE"
+      ],
+      "color": "#8b5bb0",
+      "itunesId": 1237012992,
+      "avatar": "https://p3.music.126.net/DOr-p5EvZp5SVls9lIqvqw==/109951170123769774.jpg?param=300y300"
+    },
+    {
+      "id": "36910",
+      "name": "J. Cole",
+      "albums": [
+        "2014 Forest Hills Drive",
+        "The Off-Season",
+        "Might Delete Later",
+        "The Fall-Off"
+      ],
+      "color": "#c9a227",
+      "itunesId": 73705833,
+      "avatar": "https://p4.music.126.net/dTakX8Ei10_P76QuvT8LFg==/109951172702774746.jpg?param=300y300"
+    },
+    {
+      "id": "33794",
+      "name": "Future",
+      "albums": [
+        "Pluto x Baby Pluto",
+        "I NEVER LIKED YOU",
+        "WE DON'T TRUST YOU",
+        "WE STILL DON'T TRUST YOU",
+        "The Real Me"
+      ],
+      "color": "#6a4a8a",
+      "itunesId": 128050210,
+      "avatar": "https://p4.music.126.net/xWUaaGeonb5VkbMeZWbong==/109951167353580993.jpg?param=300y300"
+    },
+    {
+      "id": "12505561",
+      "name": "Lil Baby",
+      "albums": [
+        "My Turn",
+        "The Voice of the Heroes",
+        "It's Only Me",
+        "WHAM"
+      ],
+      "color": "#2a4a7a",
+      "itunesId": 1276656483,
+      "avatar": "https://p4.music.126.net/otJV00ICy9T0ts3q2Txm2A==/109951167965049439.jpg?param=300y300"
+    },
+    {
+      "id": "976120",
+      "name": "Metro Boomin",
+      "albums": [
+        "WE DON'T TRUST YOU",
+        "WE STILL DON'T TRUST YOU"
+      ],
+      "color": "#c0392b",
+      "itunesId": 670534462,
+      "avatar": "https://p4.music.126.net/5gEBuu1SsWXCtr-5aU3uLw==/109951171989630687.jpg?param=300y300"
+    },
+    {
+      "id": "28690073",
+      "name": "Yeat",
+      "albums": [
+        "2 Alivë",
+        "Lyfë",
+        "AftërLyfe",
+        "2093",
+        "LYFESTYLE"
+      ],
+      "color": "#39d353",
+      "itunesId": 1318094493,
+      "avatar": "https://p4.music.126.net/YvXJDczW3DK3vP4RA6nxJA==/109951171594138043.jpg?param=300y300"
+    },
+    {
+      "id": "12068095",
+      "name": "Playboi Carti",
+      "albums": [
+        "Playboi Carti",
+        "Die Lit",
+        "Whole Lotta Red",
+        "MUSIC"
+      ],
+      "color": "#d63031",
+      "itunesId": 982372505,
+      "avatar": "https://p4.music.126.net/ac3RfPbh7HE3zoZGotsRhg==/109951171594193062.jpg?param=300y300"
+    },
+    {
+      "id": "30929",
+      "name": "Childish Gambino",
+      "albums": [
+        "Camp",
+        "Because the Internet",
+        "\"Awaken, My Love!\"",
+        "3.15.20",
+        "Atavista"
+      ],
+      "color": "#8e44ad",
+      "itunesId": 466842536,
+      "avatar": "https://p4.music.126.net/7sFpbi1-cxHvSAJV_Qmnkg==/109951163072724289.jpg?param=300y300"
+    },
+    {
+      "id": "39884",
+      "name": "Mac Miller",
+      "albums": [
+        "Watching Movies with the Sound Off",
+        "GO:OD AM",
+        "The Divine Feminine",
+        "Swimming",
+        "Circles",
+        "Balloonerism"
+      ],
+      "color": "#3498db",
+      "itunesId": 419944559,
+      "avatar": "https://p4.music.126.net/L4c0v7bZkBeq5hb1jCucIQ==/109951165549503872.jpg?param=300y300"
+    },
+    {
+      "id": "33329",
+      "name": "Earl Sweatshirt",
+      "albums": [
+        "Doris",
+        "Some Rap Songs",
+        "FEET OF CLAY",
+        "SICK!",
+        "Voir Dire"
+      ],
+      "color": "#6b8e23",
+      "itunesId": 445693504,
+      "avatar": "https://p3.music.126.net/g5uUxhoN09JzaKzdFRBsSg==/109951166214719109.jpg?param=300y300"
+    },
+    {
+      "id": "13643289",
+      "name": "JPEGMAFIA",
+      "albums": [
+        "LP!",
+        "OFFLINE!",
+        "SCARING THE HOES",
+        "I LAY DOWN MY LIFE FOR YOU"
+      ],
+      "color": "#f1c40f",
+      "itunesId": 1130088441,
+      "avatar": "https://p4.music.126.net/Cr-YzdRV5URbLGOCCxfKQA==/109951169885865836.jpg?param=300y300"
+    },
+    {
+      "id": "776980",
+      "name": "Denzel Curry",
+      "albums": [
+        "Imperial",
+        "TA13OO",
+        "ZUU",
+        "UNLOCKED",
+        "Melt My Eyez See Your Future",
+        "KING OF THE MISCHIEVOUS SOUTH"
+      ],
+      "color": "#2980b9",
+      "itunesId": 631440154,
+      "avatar": "https://p3.music.126.net/fkhmT69Dt8ZYjGmh-g_eUg==/109951164119706385.jpg?param=300y300"
+    },
+    {
+      "id": "37535",
+      "name": "Kid Cudi",
+      "albums": [
+        "Passion, Pain & Demon Slayin'",
+        "Man On The Moon III: The Chosen",
+        "Entergalactic",
+        "INSANO",
+        "Free"
+      ],
+      "color": "#4aa3df",
+      "itunesId": 273058501,
+      "avatar": "https://p3.music.126.net/YVVQYk04Y3FDOa-zVpv7NQ==/109951165956632552.jpg?param=300y300"
+    },
+    {
+      "id": "185858",
+      "name": "The Weeknd",
+      "albums": [
+        "Starboy",
+        "After Hours",
+        "Dawn FM",
+        "Hurry Up Tomorrow"
+      ],
+      "color": "#e74c3c",
+      "itunesId": 479756766,
+      "avatar": "https://p4.music.126.net/IImWXkozPVul_8KkPNRiLg==/109951173214106294.jpg?param=300y300"
+    },
+    {
+      "id": "905232",
+      "name": "SZA",
+      "albums": [
+        "Z",
+        "Ctrl",
+        "SOS"
+      ],
+      "color": "#b27bd4",
+      "itunesId": 605800394,
+      "avatar": "https://p4.music.126.net/95ZX9IlZ_toSzcbOEu4i6g==/109951168132500099.jpg?param=300y300"
+    },
+    {
+      "id": "1120022",
+      "name": "Bryson Tiller",
+      "albums": [
+        "T R A P S O U L",
+        "True to Self",
+        "A N N I V E R S A R Y",
+        "Bryson Tiller",
+        "Solace & The Vices"
+      ],
+      "color": "#1c3f60",
+      "itunesId": 642591128,
+      "avatar": "https://p3.music.126.net/tS8BcbUDBTBjFHu8HeegLg==/109951169505018605.jpg?param=300y300"
+    },
+    {
+      "id": "32396647",
+      "name": "Giveon",
+      "albums": [
+        "TAKE TIME",
+        "When It's All Said And Done... Take Time",
+        "Give Or Take",
+        "BELOVED"
+      ],
+      "color": "#27ae60",
+      "itunesId": 1070668868,
+      "avatar": "https://p3.music.126.net/maIaehnFxnncDHV-cbIzWA==/109951167353578885.jpg?param=300y300"
+    },
+    {
+      "id": "12062113",
+      "name": "Brent Faiyaz",
+      "albums": [
+        "Sonder Son",
+        "WASTELAND",
+        "Larger Than Life",
+        "Icon"
+      ],
+      "color": "#b08d57",
+      "itunesId": 960127446,
+      "avatar": "https://p3.music.126.net/LA8QFnUvaLcKoqGMtk2AYg==/109951168917163561.jpg?param=300y300"
+    },
+    {
+      "id": "13806114",
+      "name": "Summer Walker",
+      "albums": [
+        "Last Day Of Summer",
+        "Over It",
+        "Still Over It",
+        "Finally Over It"
+      ],
+      "color": "#d35400",
+      "itunesId": 990402287,
+      "avatar": "https://p4.music.126.net/Z4iZoYQyH6iB0NEKy6uX0Q==/109951172262350907.jpg?param=300y300"
+    },
+    {
+      "id": "12107900",
+      "name": "H.E.R.",
+      "albums": [
+        "H.E.R.",
+        "I Used To Know Her",
+        "Back of My Mind"
+      ],
+      "color": "#a29bfe",
+      "itunesId": 123049323,
+      "avatar": "https://p4.music.126.net/YCiTUcv5yleOc7r88pHFLg==/109951166096518957.jpg?param=300y300"
+    }
+  ]
+}

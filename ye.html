@@ -193,7 +193,7 @@ body.lyr-open #tgl,body.lyr-open #login-btn,body.lyr-open #artist-btn{display:no
 </style>
 
 <div id="intro">
-  <div class="intro-label">Choose an artist</div>
+  <div class="intro-label" id="intro-label">Choose an artist</div>
   <div id="artist-list" class="artist-list"></div>
   <div id="flow-name" class="flow-name"></div>
   <div id="intro-hint">Scroll or swipe to browse · Click to select</div>
@@ -209,7 +209,7 @@ body.lyr-open #tgl,body.lyr-open #login-btn,body.lyr-open #artist-btn{display:no
 <div id="hint">Scroll to browse albums</div><div id="alabel"></div>
 <div id="swipe-hint"><span class="sw-arrow">←</span><span class="sw-text">Swipe to browse</span><span class="sw-arrow">→</span></div>
 <button id="tgl" aria-label="Toggle theme">☽</button>
-<button id="artist-btn" aria-label="Change artist"><span class="dot"></span><span id="artist-name">No Artist</span></button>
+<button id="artist-btn" aria-label="Change artist"><span class="dot"></span><span id="artist-name">Select artist</span></button>
 <button id="login-btn" aria-label="登录网易云"><span class="l-dot"></span><span id="login-label">登录</span></button>
 
 <div id="login-modal">
@@ -222,10 +222,10 @@ body.lyr-open #tgl,body.lyr-open #login-btn,body.lyr-open #artist-btn{display:no
   </div>
 </div>
 
-<div id="panel"><div class="ph"><h2 id="pt"></h2><span id="py"></span></div><ul id="tracks"></ul><div id="eq"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="pp"><button id="play-btn" aria-label="播放/暂停">▶</button><div id="progress" class="progress"><div id="progress-fill" class="progress-fill"></div></div><span id="time-display" class="time">0:00</span><audio id="nf"></audio></div></div>
+<div id="panel"><div class="ph"><h2 id="pt"></h2><span id="py"></span></div><ul id="tracks"></ul><div id="eq"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="pp"><button id="play-btn" aria-label="Play / pause">▶</button><div id="progress" class="progress"><div id="progress-fill" class="progress-fill"></div></div><span id="time-display" class="time">0:00</span><audio id="nf"></audio></div></div>
 
 <div id="lyric-scene">
-  <button class="lyr-close" id="lyr-close" aria-label="关闭歌词">✕</button>
+  <button class="lyr-close" id="lyr-close" aria-label="Close lyrics">✕</button>
   <div class="lyr-vinyl-wrap">
     <div class="lyr-vinyl"><div class="lyr-label"></div></div>
     <div class="lyr-sweep"></div>
@@ -249,9 +249,9 @@ body.lyr-open #tgl,body.lyr-open #login-btn,body.lyr-open #artist-btn{display:no
   </div>
   <div class="lyr-lyrics" id="lyr-lyrics"><div class="lyr-inner" id="lyr-inner"></div></div>
   <div class="lyr-controls">
-    <button class="lyr-ctl" id="lyr-prev" aria-label="上一首">⏮</button>
-    <button class="lyr-ctl lyr-play-ctl" id="lyr-play" aria-label="暂停/播放">⏸</button>
-    <button class="lyr-ctl" id="lyr-next" aria-label="下一首">⏭</button>
+    <button class="lyr-ctl" id="lyr-prev" aria-label="Previous track">⏮</button>
+    <button class="lyr-ctl lyr-play-ctl" id="lyr-play" aria-label="Play / pause">⏸</button>
+    <button class="lyr-ctl" id="lyr-next" aria-label="Next track">⏭</button>
   </div>
 </div>
 
@@ -263,38 +263,15 @@ import * as THREE from 'three';
 window.onerror=(m,s,l)=>{const el=document.getElementById('error-msg');el.style.display='block';el.textContent=m+'\n'+s+':'+l};
 
 // ═══ ARTISTS ═══
-const ARTISTS=[
-  {id:'37520',name:'Kanye West',alias:'Ye',color:'#d4a853',avatar:'https://p3.music.126.net/P0W5NL1WOiUTKww9DJaNpA==/109951169505042939.jpg?param=300y300'},
-  {id:'53283',name:'Drake',alias:'Drizzy',color:'#4a90d9',avatar:'https://p3.music.126.net/IYf_pG2T5Ld89EqdIrr5cw==/109951172373878970.jpg?param=300y300'},
-  {id:'44708',name:'Tyler, the Creator',alias:'Tyler',color:'#2ecc71',avatar:'https://p4.music.126.net/ddcTNGUZKBpIGQS8JowElQ==/109951171890677615.jpg?param=300y300'},
-  {id:'33727',name:'Frank Ocean',alias:'Frank',color:'#e67e22',avatar:'https://p3.music.126.net/Lx76q7pwpFIlK2HvFHbQ-A==/109951168299107625.jpg?param=300y300'},
-  {id:'1021293',name:'Daniel Caesar',alias:'Daniel',color:'#9b8ec4',avatar:'https://p4.music.126.net/fjQ50mbu7inIjr4DXaSTHA==/109951172201677466.jpg?param=300y300'},
-  {id:'737012',name:'Travis Scott',alias:'Travis',color:'#a83232',avatar:'https://p4.music.126.net/y_Ew2QXqvWvyY01IeDjUbg==/109951169806256554.jpg?param=300y300'},
-  {id:'37995',name:'Kendrick Lamar',alias:'Kendrick',color:'#2c3e50',avatar:'https://p3.music.126.net/Kp4w_qOKkRVi77bdn2hfjg==/109951170181165907.jpg?param=300y300'},
-  {id:'90075',name:'Blood Orange',alias:'Blood',color:'#e65a3a',avatar:'https://p3.music.126.net/65ELHhvUGT0nR2PJiOhMDg==/109951165181255219.jpg?param=300y300'},
-  {id:'29100',name:'ASAP Rocky',alias:'ASAP',color:'#7a5ba0',avatar:'https://p3.music.126.net/M_Q4vd42GaCQffaj4gEDLw==/109951169914178107.jpg?param=300y300'},
-  {id:'12062134',name:'21 Savage',alias:'21',color:'#4a6b3a',avatar:'https://p4.music.126.net/P7lzSpRMei_91wu3JaWTlw==/109951168930766214.jpg?param=300y300'},
-  {id:'14253161',name:'Don Toliver',alias:'Don',color:'#8b5bb0',avatar:'https://p3.music.126.net/DOr-p5EvZp5SVls9lIqvqw==/109951170123769774.jpg?param=300y300'},
-  {id:'36910',name:'J. Cole',alias:'Cole',color:'#c9a227',avatar:'https://p4.music.126.net/dTakX8Ei10_P76QuvT8LFg==/109951172702774746.jpg?param=300y300'},
-  {id:'33794',name:'Future',alias:'Future',color:'#6a4a8a',avatar:'https://p4.music.126.net/xWUaaGeonb5VkbMeZWbong==/109951167353580993.jpg?param=300y300'},
-  {id:'12505561',name:'Lil Baby',alias:'Baby',color:'#2a4a7a',avatar:'https://p4.music.126.net/otJV00ICy9T0ts3q2Txm2A==/109951167965049439.jpg?param=300y300'},
-  {id:'976120',name:'Metro Boomin',alias:'Metro',color:'#c0392b',avatar:'https://p4.music.126.net/5gEBuu1SsWXCtr-5aU3uLw==/109951171989630687.jpg?param=300y300'},
-  {id:'28690073',name:'Yeat',alias:'Yeat',color:'#39d353',avatar:'https://p4.music.126.net/YvXJDczW3DK3vP4RA6nxJA==/109951171594138043.jpg?param=300y300'},
-  {id:'12068095',name:'Playboi Carti',alias:'Carti',color:'#d63031',avatar:'https://p4.music.126.net/ac3RfPbh7HE3zoZGotsRhg==/109951171594193062.jpg?param=300y300'},
-  {id:'30929',name:'Childish Gambino',alias:'Gambino',color:'#8e44ad',avatar:'https://p4.music.126.net/7sFpbi1-cxHvSAJV_Qmnkg==/109951163072724289.jpg?param=300y300'},
-  {id:'39884',name:'Mac Miller',alias:'Mac',color:'#3498db',avatar:'https://p4.music.126.net/L4c0v7bZkBeq5hb1jCucIQ==/109951165549503872.jpg?param=300y300'},
-  {id:'33329',name:'Earl Sweatshirt',alias:'Earl',color:'#6b8e23',avatar:'https://p3.music.126.net/g5uUxhoN09JzaKzdFRBsSg==/109951166214719109.jpg?param=300y300'},
-  {id:'13643289',name:'JPEGMAFIA',alias:'Peggy',color:'#f1c40f',avatar:'https://p4.music.126.net/Cr-YzdRV5URbLGOCCxfKQA==/109951169885865836.jpg?param=300y300'},
-  {id:'776980',name:'Denzel Curry',alias:'Denzel',color:'#2980b9',avatar:'https://p3.music.126.net/fkhmT69Dt8ZYjGmh-g_eUg==/109951164119706385.jpg?param=300y300'},
-  {id:'37535',name:'Kid Cudi',alias:'Cudi',color:'#4aa3df',avatar:'https://p3.music.126.net/YVVQYk04Y3FDOa-zVpv7NQ==/109951165956632552.jpg?param=300y300'},
-  {id:'185858',name:'The Weeknd',alias:'Weeknd',color:'#e74c3c',avatar:'https://p4.music.126.net/IImWXkozPVul_8KkPNRiLg==/109951173214106294.jpg?param=300y300'},
-  {id:'905232',name:'SZA',alias:'SZA',color:'#b27bd4',avatar:'https://p4.music.126.net/95ZX9IlZ_toSzcbOEu4i6g==/109951168132500099.jpg?param=300y300'},
-  {id:'1120022',name:'Bryson Tiller',alias:'Bryson',color:'#1c3f60',avatar:'https://p3.music.126.net/tS8BcbUDBTBjFHu8HeegLg==/109951169505018605.jpg?param=300y300'},
-  {id:'32396647',name:'Giveon',alias:'Giveon',color:'#27ae60',avatar:'https://p3.music.126.net/maIaehnFxnncDHV-cbIzWA==/109951167353578885.jpg?param=300y300'},
-  {id:'12062113',name:'Brent Faiyaz',alias:'Brent',color:'#b08d57',avatar:'https://p3.music.126.net/LA8QFnUvaLcKoqGMtk2AYg==/109951168917163561.jpg?param=300y300'},
-  {id:'13806114',name:'Summer Walker',alias:'Summer',color:'#d35400',avatar:'https://p4.music.126.net/Z4iZoYQyH6iB0NEKy6uX0Q==/109951172262350907.jpg?param=300y300'},
-  {id:'12107900',name:'H.E.R.',alias:'HER',color:'#a29bfe',avatar:'https://p4.music.126.net/YCiTUcv5yleOc7r88pHFLg==/109951166096518957.jpg?param=300y300'}
-];
+// 艺人列表来自 /api/artists，数据源是项目根目录的 artists.json。
+// 想加歌手只改 artists.json，这里不用动。
+let ARTISTS=[];
+async function loadArtists(){
+  const d=await api('/api/artists');
+  ARTISTS=(d.artists||[]).filter(a=>a&&a.id&&a.name);
+  if(!ARTISTS.length)throw new Error('artists.json has no usable artist');
+  return ARTISTS;
+}
 
 // ═══ STATE ═══
 let currentArtist=null,albums=[],albumTracks={},currentAlbum=null;
@@ -481,7 +458,7 @@ async function selectArtist(artist){
   try{
     const d=await api('/api/artist/albums?id='+artist.id);
     albums=(d.hotAlbums||[]).slice(0,30);
-    if(!albums.length){hint.textContent='No albums found';hint.style.opacity='1';loadingMsg.classList.remove('on');return}
+    if(!albums.length){hint.textContent='No albums found for this artist';hint.style.opacity='1';loadingMsg.classList.remove('on');return}
     rebuildCarousel();
     if(currentArtist)blendBg(currentArtist.color,theme==='dark');
     hint.textContent='Scroll to browse';
@@ -489,7 +466,7 @@ async function selectArtist(artist){
     document.getElementById('c').classList.add('visible');
     showSwipeHint();
   }catch(e){
-    hint.textContent='Failed to load. Try another artist.';
+    hint.textContent='Could not load albums — try another artist';
     hint.style.opacity='1';
   }
   loadingMsg.classList.remove('on');
@@ -720,7 +697,18 @@ function dismissIntro(){
 }
 
 // ═══ INTRO ═══
-initIntro();
+(async()=>{
+  const introLabel=document.getElementById('intro-label'),introHint=document.getElementById('intro-hint');
+  try{
+    await loadArtists();
+  }catch(e){
+    console.error('[artists] load failed',e);
+    introLabel.textContent='Failed to load artists';
+    introHint.textContent='Could not read artists.json — is the server running?';
+    return;
+  }
+  initIntro();
+})();
 artistBtn.addEventListener('click',showArtistPicker);
 
 // ═══ INPUT ═══
@@ -814,10 +802,10 @@ async function pollLogin(){
   try{
     const d=await api('/api/login/qr/check?key='+loginKey);
     if(d.code===801){loginStatus.textContent='请用网易云音乐 App 扫码登录';}
-    else if(d.code===802){loginStatus.textContent='已扫码，请在手机上确认';}
+    else if(d.code===802){loginStatus.textContent='已扫码，请在手机上确认登录';}
     else if(d.code===803){loginStatus.textContent='登录成功！';if(loginPollTimer){clearInterval(loginPollTimer);loginPollTimer=null;}const st=await api('/api/login/status');setLoginUI(st.loggedIn,st.nickname);setTimeout(closeLoginModal,800);}
     else if(d.code===800){loginStatus.textContent='二维码已过期，请刷新';if(loginPollTimer){clearInterval(loginPollTimer);loginPollTimer=null;}}
-  }catch(e){loginStatus.textContent='检查失败，请重试';}
+  }catch(e){loginStatus.textContent='网络异常，请重试';}
 }
 loginBtn.addEventListener('click',openLoginModal);
 document.getElementById('login-close').addEventListener('click',closeLoginModal);
