@@ -57,8 +57,8 @@ body{background:var(--bg);overflow:hidden;font-family:-apple-system,BlinkMacSyst
 
 /* ═══ Top bar ═══ */
 #topbar{position:fixed;top:0;left:0;right:0;height:var(--bar-h);z-index:1100;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 var(--gutter);pointer-events:none;transition:opacity .45s var(--ease)}
-body.lyr-open #topbar{opacity:0}
-.brand{display:flex;align-items:center;gap:10px;pointer-events:auto}
+body.lyr-open .brand{opacity:0;pointer-events:none}
+.brand{display:flex;align-items:center;gap:10px;pointer-events:auto;transition:opacity .35s var(--ease)}
 .brand-mark{width:21px;height:21px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 50% 50%,var(--accent) 0 20%,#15151b 21% 38%,#2b2b35 39% 49%,#15151b 50% 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1),var(--sh-1)}
 .brand-name{font-size:var(--fs-sm);font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:var(--tx-2);white-space:nowrap}
 .tb-actions{display:flex;align-items:center;gap:9px;pointer-events:auto;min-width:0}
@@ -176,8 +176,9 @@ body.picked #artist-btn{display:flex}
 #lyric-scene:not(.on) .lyr-now{opacity:0;transform:translateY(-16px)}
 #lyric-scene:not(.on) .lyr-controls{opacity:0}
 #lyric-scene:not(.on) .lyr-progress{opacity:0}
-.lyr-close{position:absolute;top:20px;right:var(--gutter);z-index:6;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);box-shadow:var(--sh-1);display:flex;align-items:center;justify-content:center;color:var(--tx-2);transition:color .28s var(--ease),border-color .28s var(--ease),transform .28s var(--ease)}
-.lyr-close:hover{color:var(--tx);border-color:var(--line-2);transform:translateY(-1px)}
+.lyr-close{position:fixed;top:14px;left:var(--gutter);z-index:6;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);box-shadow:var(--sh-1);display:flex;align-items:center;justify-content:center;color:var(--tx-2);opacity:0;transform:scale(.9);transition:color .28s var(--ease),border-color .28s var(--ease),opacity .4s var(--ease),transform .4s var(--ease)}
+#lyric-scene.on .lyr-close{opacity:1;transform:scale(1)}
+#lyric-scene.on .lyr-close:hover{color:var(--tx);border-color:var(--line-2);transform:scale(1.08)}
 .lyr-vinyl-wrap{position:absolute;right:2vw;top:50%;transform:translateY(-50%);width:min(46vh,42vw);aspect-ratio:1;z-index:2}
 .lyr-vinyl{position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 30px 80px rgba(0,0,0,.42);will-change:transform}
 .lyr-vinyl.tremble{animation:vinylTremble .32s ease-out}
@@ -211,10 +212,11 @@ body.picked #artist-btn{display:flex}
 .lyr-bar-fill::after{content:"";position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--lyr-accent,var(--accent));box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .lyr-time{font-size:var(--fs-xs);color:var(--tx-3);font-variant-numeric:tabular-nums;min-width:38px}
 .lyr-time:last-child{text-align:right}
-.lyr-now{position:absolute;top:9%;left:0;right:0;text-align:center;z-index:5;pointer-events:none;padding:0 20px}
-.lyr-now-track{font-size:clamp(1.2rem,2.4vw,1.8rem);font-weight:600;color:var(--tx);letter-spacing:-0.024em;text-shadow:0 2px 12px rgba(0,0,0,.12)}
-.lyr-now-meta{font-size:clamp(0.78rem,1.2vw,0.95rem);color:var(--tx-2);margin-top:7px;letter-spacing:.02em}
-.lyr-album-card{position:absolute;left:50%;transform:translateX(-50%);bottom:-140px;display:flex;align-items:center;gap:12px;background:var(--glass-2);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1px solid var(--line);border-radius:var(--r-md);padding:9px 14px 9px 9px;z-index:5;box-shadow:var(--sh-2);width:max-content;max-width:90%}
+.lyr-now{position:absolute;top:calc(var(--bar-h) + 18px);left:0;right:0;text-align:center;z-index:5;pointer-events:none;padding:0 20px}
+.lyr-now-track{font-size:clamp(1.2rem,2.4vw,1.8rem);font-weight:600;color:var(--tx);letter-spacing:-0.024em;text-shadow:0 2px 12px rgba(0,0,0,.12);max-width:min(560px,52vw);margin:0 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lyr-now-meta{font-size:clamp(0.78rem,1.2vw,0.95rem);color:var(--tx-2);margin-top:7px;letter-spacing:.02em;max-width:min(560px,52vw);margin-left:auto;margin-right:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lyr-album-card{position:absolute;left:50%;transform:translateX(-50%);bottom:-140px;display:flex;align-items:center;gap:12px;background:var(--glass-2);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1px solid var(--line);border-radius:var(--r-md);padding:9px 14px 9px 9px;z-index:5;box-shadow:var(--sh-2);width:max-content;max-width:90%;transition:opacity .4s var(--ease)}
+.lyr-album-card:has(img[src=""]){opacity:0;pointer-events:none}
 .lyr-album-card img{width:44px;height:44px;border-radius:var(--r-xs);object-fit:cover;flex-shrink:0}
 .lyr-album-name{font-size:var(--fs-md);font-weight:600;color:var(--tx);letter-spacing:-0.012em}
 .lyr-album-year{font-size:var(--fs-xs);color:var(--tx-3);margin-top:3px}
@@ -276,7 +278,8 @@ body.picked #artist-btn{display:flex}
   .lyr-time{font-size:var(--fs-sm);min-width:40px}
   .lyr-controls{left:50%;transform:translateX(-50%)}
   .lyr-album-card{display:none}
-  .lyr-now{top:3%}
+  .lyr-now{top:calc(var(--bar-h) + 10px)}
+  .lyr-close{top:12px}
 }
 </style>
 <body>
