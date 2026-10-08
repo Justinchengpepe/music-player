@@ -71,7 +71,7 @@ body.lyr-open .brand{opacity:0;pointer-events:none}
 #login-btn.on .l-dot{background:#2ecc71;box-shadow:0 0 0 3px rgba(46,204,113,.2)}
 #artist-btn{display:none}
 body.picked #artist-btn{display:flex}
-.icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);box-shadow:var(--sh-1);display:flex;align-items:center;justify-content:center;color:var(--tx-2);transition:color .28s var(--ease),border-color .28s var(--ease),transform .28s var(--ease),box-shadow .28s var(--ease)}
+.icon-btn{width:36px;height:36px;flex-shrink:0;border-radius:50%;border:1px solid var(--line);background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);box-shadow:var(--sh-1);display:flex;align-items:center;justify-content:center;color:var(--tx-2);transition:color .28s var(--ease),border-color .28s var(--ease),transform .28s var(--ease),box-shadow .28s var(--ease)}
 .icon-btn:hover{color:var(--tx);border-color:var(--line-2);transform:translateY(-1px);box-shadow:var(--sh-2)}
 .icon-btn:active{transform:translateY(0) scale(.94)}
 
@@ -252,7 +252,9 @@ body.picked #artist-btn{display:flex}
 @media(max-width:768px){
   :root{--bar-h:58px}
   .brand-name{display:none}
-  .chip{max-width:44vw;height:34px;padding:0 12px}
+  .chip{max-width:min(38vw,150px);height:34px;padding:0 12px}
+  /* 歌词页左上角有关闭键，进一步压缩歌手 chip，避免两者相撞 */
+  body.lyr-open #artist-btn{max-width:min(30vw,140px)}
   #panel{top:auto;bottom:0;width:100%;max-width:none;height:56vh;height:56dvh;border-left:none;border-top:1px solid var(--line);border-radius:var(--r-xl) var(--r-xl) 0 0;transform:translateY(100%)}
   #panel.on{transform:translateY(0)}
   .ph{padding:18px 20px 15px}.ph h2{font-size:var(--fs-lg)}.ph-art{width:48px;height:48px}
