@@ -57,6 +57,38 @@ npm start
 
 ---
 
+## 分享给别人 / 别人怎么用
+
+**这个项目不是静态网页**，页面要调网易云 API（浏览器直接调会被 CORS 挡死），
+所以必须有一个 Node 服务在后面转发。这意味着：
+
+- ❌ 不能部署到 GitHub Pages / 静态托管
+- ❌ 不能直接双击 `ye.html` 打开（会白屏）
+- ✅ 必须把仓库 clone 下来跑起来
+
+别人拿到你的仓库地址后，三步就能用：
+
+```bash
+git clone https://github.com/<你的用户名>/music-player.git
+cd music-player
+npm install && npm start
+```
+
+然后浏览器打开 http://localhost:8088，点右上角「登录」，用**自己的**网易云 App 扫码。
+
+### 登录态是按人隔离的
+
+这是本项目一个重要的设计：**服务器上不保存任何账号凭证。**
+
+- 扫码拿到的 Cookie 只写进**访客自己的浏览器**（localStorage）
+- 每次请求通过 `X-Netease-Cookie` 请求头带给服务端，服务端用完即弃
+- 服务端进程本身永远是「未登录」状态
+
+所以就算部署到公网，也是**谁登录就是谁的账号**，彼此完全看不到对方。
+换一台设备、换一个浏览器都要重新扫码 —— 这是预期行为。
+
+---
+
 ## 加一位歌手
 
 ### 方式一：命令行（推荐）
@@ -148,7 +180,13 @@ cp musickit.example.json musickit.json
 
 ## 登录网易云（可选）
 
-不登录也能播放试听片段；登录后可解锁完整音质。点击右上角「登录」，用网易云 App 扫码即可，Cookie 会自动写入 `.netease_cookie`，重启不丢。
+不登录也能播放试听片段；登录后可解锁完整音质。点击右上角「登录」，用网易云 App 扫码即可。
+
+Cookie 会保存在**你自己浏览器**的 localStorage 里，重启服务不丢，但换浏览器 / 换设备要重新扫码。
+已登录时点右上角胶囊可以退出登录。
+
+> 服务端**不会**把 Cookie 写到磁盘。早期版本会把 Cookie 存成 `.netease_cookie` 文件，
+> 一旦部署到公网就会导致「谁先扫码、之后所有访客都变成那个账号」—— 该行为已移除。
 
 ---
 
@@ -156,17 +194,20 @@ cp musickit.example.json musickit.json
 
 所有接口以 `/api/` 开头，返回 JSON。
 
+需要登录态的接口（`song/url`、`album`、`lyric`、`search`、`login/status`）会读取请求头
+`X-Netease-Cookie`（URL 编码后的网易云 Cookie）。不带这个头就是匿名访问，服务端不会替你兜底。
+
 | 方法 | 路径 | 说明 |
 |---|---|---|
 | GET | `/api/artists` | 艺人列表（前端开场轮播用），含自动补全的 `color` / `avatar` |
 | GET | `/api/artist/albums?id=<艺人ID>` | 某位艺人的专辑（含 iTunes 高清封面）与未匹配清单 `unmatched` |
 | GET | `/api/album?id=<专辑ID>` | 专辑详情与曲目列表 |
-| GET | `/api/song/url?id=<歌曲ID>` | 歌曲播放地址（登录后返回 999kbps） |
+| GET | `/api/song/url?id=<歌曲ID>` | 歌曲播放地址（带 Cookie 时返回 999kbps） |
 | GET | `/api/lyric?id=<歌曲ID>` | 歌词 |
 | GET | `/api/search?keywords=<关键词>&type=1` | 搜索 |
 | GET | `/api/login/qr/key` | 生成登录二维码 |
-| GET | `/api/login/qr/check?key=<key>` | 轮询扫码状态，`code=803` 表示登录成功 |
-| GET | `/api/login/status` | 查询当前登录状态 |
+| GET | `/api/login/qr/check?key=<key>` | 轮询扫码状态。`code=803` 时**在响应里返回 `cookie` 与 `nickname`**，由前端自行保存 |
+| GET | `/api/login/status` | 查询当前登录状态（读请求头，现查一次） |
 | GET | `/api/musickit/token` | 签发 Apple MusicKit Developer Token（ES256 JWT） |
 
 ---
@@ -187,7 +228,10 @@ cd /opt/vinyl-player && bash deploy.sh
 
 仓库内已包含 `.railwayignore`，直接连接 GitHub 仓库即可部署。记得配置 `NETEASE_PROXY`。
 
-> 部署到公网前请确认 `.netease_cookie` 与 `musickit.json` 没有被一并上传 —— 这两个文件包含账号凭证，已在 `.gitignore` 中排除。
+> **可以放心部署到公网。** 登录态按访客隔离，服务器不落盘任何账号凭证。
+> 只需确认 `musickit.json`（你的 Apple 私钥）没有被一并上传 —— 它已在 `.gitignore` 中排除。
+>
+> 建议用 HTTPS：Cookie 是通过请求头传给服务端的，明文 HTTP 下可能被中间人截获。
 
 ---
 

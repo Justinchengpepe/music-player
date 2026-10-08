@@ -12,10 +12,8 @@ const { fetchArtistAlbums, resolveItunesArtistId, resolveAvatar, fetchITunesAlbu
 const PORT = process.env.PORT || 8088;
 const PROXY = process.env.NETEASE_PROXY || undefined;
 
-const COOKIE_FILE = path.join(__dirname, '.netease_cookie');
 const ARTISTS_FILE = path.join(__dirname, 'artists.json');
 const MUSICKIT_FILE = path.join(__dirname, 'musickit.json');
-
 const MIME = {
   '.html': 'text/html', '.js': 'application/javascript', '.mjs': 'application/javascript',
   '.css': 'text/css', '.json': 'application/json', '.png': 'image/png',
@@ -23,10 +21,22 @@ const MIME = {
   '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ico': 'image/x-icon'
 };
 
-// 网易云登录 Cookie（扫码登录后自动写入，用于解锁完整播放）
-let neteaseCookie = '';
-let neteaseProfile = null;
-try { neteaseCookie = fs.readFileSync(COOKIE_FILE, 'utf8').trim(); } catch (e) {}
+// ═══════════════════════════════════════════
+//  网易云登录态 —— 只借不存
+//
+//  Cookie 由每位访客的浏览器自己保管（localStorage），
+//  每次请求通过 X-Netease-Cookie 头带上来，服务端用完即弃、绝不落盘。
+//  所以同一台服务器上的不同访客彼此完全隔离：
+//  谁登录就是谁的账号，服务器本身永远是「未登录」状态。
+//
+//  旧版把 Cookie 写在服务器上的 .netease_cookie 里，一旦部署到公网，
+//  谁先扫码之后所有访客都会共享那个账号 —— 这个文件现在不再被读取。
+// ═══════════════════════════════════════════
+function cookieOf(req) {
+  const raw = req.headers['x-netease-cookie'];
+  if (!raw) return '';
+  try { return decodeURIComponent(raw).trim(); } catch (e) { return String(raw).trim(); }
+}
 
 // Apple MusicKit 配置
 let mkConfig = { teamId: '', keyId: '', privateKey: '' };
@@ -99,25 +109,18 @@ async function hydrate(a) {
   return card;
 }
 
-// ═══════════════════════════════════════════
-//  网易云账号信息
-//  Cookie 可能是上次扫码留下的，重启后 profile 是空的，
-//  这里按需补拉一次，界面才能显示昵称而不是笼统的「已登录」。
-// ═══════════════════════════════════════════
-let profilePromise = null;
-function ensureProfile() {
-  if (!neteaseCookie) return Promise.resolve(null);
-  if (neteaseProfile) return Promise.resolve(neteaseProfile);
-  if (!profilePromise) {
-    profilePromise = netease.login_status({ cookie: neteaseCookie, proxy: PROXY })
-      .then(r => {
-        neteaseProfile = (r.body && r.body.data && r.body.data.profile) || null;
-        return neteaseProfile;
-      })
-      .catch(() => null)
-      .then(p => { profilePromise = null; return p; });
+// 拿某个 Cookie 现查一次网易云账号状态
+// 网络异常时按「仍登录」处理，免得一次抖动就把用户的凭证清掉
+async function probeCookie(cookie) {
+  if (!cookie) return { loggedIn: false, nickname: null };
+  try {
+    const r = await netease.login_status({ cookie, proxy: PROXY });
+    const d = r.body && r.body.data;
+    const p = d && d.profile;
+    return { loggedIn: !!p, nickname: (p && p.nickname) || null };
+  } catch (e) {
+    return { loggedIn: true, nickname: null, stale: true };
   }
-  return profilePromise;
 }
 
 // ═══════════════════════════════════════════
@@ -221,7 +224,7 @@ async function handleAPI(req, res) {
     const id = url.searchParams.get('id');
     if (!id) { res.writeHead(400); res.end('Missing id'); return; }
     try {
-      const result = await netease.album({ id, proxy: PROXY });
+      const result = await netease.album({ id, cookie: cookieOf(req) || undefined, proxy: PROXY });
       json(res, 200, result.body);
     } catch (e) {
       json(res, 500, { code: -1, message: e.message });
@@ -234,10 +237,11 @@ async function handleAPI(req, res) {
     const id = url.searchParams.get('id');
     if (!id) { res.writeHead(400); res.end('Missing id'); return; }
     try {
+      const ck = cookieOf(req);
       const result = await netease.song_url({
         id,
-        br: neteaseCookie ? 999000 : 320000,
-        cookie: neteaseCookie || undefined,
+        br: ck ? 999000 : 320000,
+        cookie: ck || undefined,
         proxy: PROXY
       });
       json(res, 200, result.body);
@@ -252,7 +256,7 @@ async function handleAPI(req, res) {
     const id = url.searchParams.get('id');
     if (!id) { res.writeHead(400); res.end('Missing id'); return; }
     try {
-      const result = await netease.lyric({ id, proxy: PROXY });
+      const result = await netease.lyric({ id, cookie: cookieOf(req) || undefined, proxy: PROXY });
       json(res, 200, result.body);
     } catch (e) {
       json(res, 500, { code: -1, message: e.message });
@@ -275,6 +279,7 @@ async function handleAPI(req, res) {
   }
 
   // 扫码登录 —— 轮询状态
+  // 登录成功后把 Cookie 交回给浏览器保管，服务端不留存
   if (route === '/api/login/qr/check') {
     const key = url.searchParams.get('key');
     if (!key) { res.writeHead(400); res.end('Missing key'); return; }
@@ -282,12 +287,10 @@ async function handleAPI(req, res) {
       const r = await netease.login_qr_check({ key, proxy: PROXY });
       const code = r.body && r.body.code;
       if (code === 803) {
-        neteaseCookie = r.body.cookie || '';
-        try { fs.writeFileSync(COOKIE_FILE, neteaseCookie); } catch (e) {}
-        try {
-          const st = await netease.login_status({ cookie: neteaseCookie, proxy: PROXY });
-          neteaseProfile = (st.body && st.body.data && st.body.data.profile) || null;
-        } catch (e) { neteaseProfile = null; }
+        const cookie = r.body.cookie || '';
+        const { nickname } = await probeCookie(cookie);
+        json(res, 200, { code, message: r.body && r.body.message, cookie, nickname });
+        return;
       }
       json(res, 200, { code: code || -1, message: r.body && r.body.message });
     } catch (e) {
@@ -296,10 +299,9 @@ async function handleAPI(req, res) {
     return;
   }
 
-  // 登录状态
+  // 登录状态 —— 用请求头带上来的 Cookie 现查一次
   if (route === '/api/login/status') {
-    if (neteaseCookie && !neteaseProfile) await ensureProfile();
-    json(res, 200, { loggedIn: !!neteaseCookie, nickname: neteaseProfile && neteaseProfile.nickname });
+    json(res, 200, await probeCookie(cookieOf(req)));
     return;
   }
 
@@ -309,7 +311,7 @@ async function handleAPI(req, res) {
     const type = url.searchParams.get('type') || '1';
     if (!keywords) { res.writeHead(400); res.end('Missing keywords'); return; }
     try {
-      const result = await netease.cloudsearch({ keywords, type: Number(type), limit: 20, proxy: PROXY });
+      const result = await netease.cloudsearch({ keywords, type: Number(type), limit: 20, cookie: cookieOf(req) || undefined, proxy: PROXY });
       json(res, 200, result.body);
     } catch (e) {
       json(res, 500, { code: -1, message: e.message });
@@ -363,11 +365,5 @@ server.listen(PORT, () => {
   console.log('Server: http://localhost:' + PORT);
   console.log('艺人 ' + ARTISTS.length + ' 位 · 专辑 ' + albums + ' 张（来自 artists.json）');
   if (PROXY) console.log('代理：' + PROXY);
-  if (!neteaseCookie) {
-    console.log('网易云登录：未登录（点右上角扫码）');
-  } else {
-    ensureProfile().then(p => {
-      console.log('网易云登录：' + (p && p.nickname ? p.nickname : '已登录（用户信息拉取失败）'));
-    });
-  }
+  console.log('登录态：按访客隔离（Cookie 存在各人浏览器里，服务端不落盘）');
 });
