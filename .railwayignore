@@ -1,0 +1,6 @@
+node_modules
+.git
+.DS_Store
+*.log
+.netease_cookie
+musickit.json

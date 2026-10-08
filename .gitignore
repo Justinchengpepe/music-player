@@ -1,0 +1,13 @@
+# ---- 凭证：绝对不要提交 ----
+.netease_cookie
+musickit.json
+
+# ---- 依赖 ----
+node_modules/
+
+# ---- 系统 ----
+.DS_Store
+
+# ---- 日志 ----
+*.log
+npm-debug.log*

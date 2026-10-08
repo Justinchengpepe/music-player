@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Kanye West — Album Player</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #ffffff;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    #three-container {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      cursor: default;
+    }
+    #three-container canvas { display: block; }
+
+    /* ── Hint ── */
+    #hint {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 5;
+      pointer-events: none;
+      color: rgba(255,255,255,0.45);
+      font-size: 15px;
+      text-align: center;
+      transition: opacity 0.5s;
+      letter-spacing: 0.03em;
+    }
+
+    /* ── Track Panel ── */
+    #track-panel {
+      position: fixed;
+      top: 0; right: 0;
+      width: 58%;
+      max-width: 520px;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 10;
+      background: rgba(8, 8, 12, 0.88);
+      -webkit-backdrop-filter: blur(28px);
+      backdrop-filter: blur(28px);
+      border-left: 1px solid rgba(255,255,255,0.06);
+      transform: translateX(100%);
+      transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #track-panel.visible {
+      transform: translateX(0);
+    }
+
+    .panel-header {
+      padding: 28px 24px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+    .panel-header h2 {
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      white-space: pre-line;
+    }
+    .panel-header .year {
+      color: rgba(255,255,255,0.4);
+      font-size: 13px;
+      margin-top: 4px;
+      display: block;
+    }
+
+    #track-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+      list-style: none;
+    }
+    #track-list::-webkit-scrollbar { width: 4px; }
+    #track-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+
+    .track-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 24px;
+      cursor: pointer;
+      transition: background 0.15s;
+      gap: 12px;
+      color: rgba(255,255,255,0.55);
+      border-left: 3px solid transparent;
+    }
+    .track-item:hover {
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.85);
+    }
+    .track-item.playing {
+      color: #fff;
+      border-left-color: #d4a853;
+      background: rgba(212, 168, 83, 0.08);
+    }
+    .track-item.unavailable {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    .track-num {
+      width: 22px;
+      font-size: 12px;
+      font-weight: 500;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .track-title {
+      font-size: 14px;
+      letter-spacing: -0.005em;
+    }
+    .track-playing-indicator {
+      margin-left: auto;
+      font-size: 10px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .track-item.playing .track-playing-indicator {
+      opacity: 0.7;
+    }
+
+    .panel-player {
+      flex-shrink: 0;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 6px 0 0;
+    }
+    .panel-player iframe {
+      display: block;
+      width: 100%;
+      height: 66px;
+      border: 0;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      #track-panel {
+        width: 100%;
+        max-width: none;
+        height: 55vh;
+        height: 55dvh;
+        top: auto;
+        bottom: 0;
+        right: 0;
+        transform: translateY(100%);
+        border-left: none;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        border-radius: 16px 16px 0 0;
+      }
+      #track-panel.visible { transform: translateY(0); }
+      .panel-header { padding: 20px 20px 14px; }
+      .panel-header h2 { font-size: 17px; }
+      .track-item { padding: 9px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="three-container"></div>
+
+  <div id="hint">Hover over an album · Click to explore</div>
+
+  <div id="loading-indicator" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:100;color:#ff0000;font-size:24px;font-family:system-ui;text-align:center;background:#fff;padding:30px;border-radius:8px;">
+    LOADING...<br><span style="font-size:14px;color:#999;">JS not running yet</span>
+  </div>
+
+  <div id="track-panel">
+    <div class="panel-header">
+      <h2 id="panel-title"></h2>
+      <span class="year" id="panel-year"></span>
+    </div>
+    <ul id="track-list"></ul>
+    <div class="panel-player">
+      <iframe id="netease-frame" title="NetEase Music Player" allow="autoplay" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+    </div>
+  </div>
+
+  <div id="error-msg" style="display:none;position:fixed;inset:0;z-index:99;background:#0a0a1a;color:#ff6b6b;padding:40px;font-family:monospace;font-size:14px;overflow:auto;white-space:pre-wrap;"></div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./js/three.module.js"
+    }
+  }
+  </script>
+
+  <script type="module" src="js/main.js"></script>
+  <script>
+    window.onerror = function(msg, url, line, col, err) {
+      var el = document.getElementById('error-msg');
+      el.style.display = 'block';
+      el.textContent = 'ERROR: ' + msg + '\nAt: ' + url + ':' + line + ':' + col + '\n\n' + (err && err.stack || '');
+      document.getElementById('hint').style.display = 'none';
+    };
+  </script>
+</body>
+</html>

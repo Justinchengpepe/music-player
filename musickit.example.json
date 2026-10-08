@@ -1,0 +1,5 @@
+{
+  "teamId": "YOUR_TEAM_ID",
+  "keyId": "YOUR_KEY_ID",
+  "privateKey": "-----BEGIN PRIVATE KEY-----\nYOUR_KEY_HERE\n-----END PRIVATE KEY-----"
+}
