@@ -17,22 +17,22 @@
 <table>
 <tr>
 <td width="50%">
-<img src="assets/album-panel.png" alt="专辑面板">
-<p align="center"><sub>曲目面板 · 播放中高亮 / 进度拖拽</sub></p>
+<img src="assets/artist-picker.png" alt="选人界面">
+<p align="center"><sub>开场选人 · 艺人无限轮播，滚轮 / 滑动切换</sub></p>
 </td>
 <td width="50%">
-<img src="assets/lyrics.png" alt="黑胶歌词页">
-<p align="center"><sub>黑胶歌词页 · 唱针随进度由外圈移向内圈</sub></p>
+<img src="assets/album-panel.png" alt="专辑面板">
+<p align="center"><sub>曲目面板 · 播放中高亮 / 进度拖拽</sub></p>
 </td>
 </tr>
 <tr>
 <td width="50%">
-<img src="assets/panel-dark.png" alt="暗色主题">
-<p align="center"><sub>暗色主题 · 同一面板与歌单</sub></p>
+<img src="assets/lyrics.png" alt="黑胶歌词页">
+<p align="center"><sub>黑胶歌词页 · 唱针随进度由外圈移向内圈</sub></p>
 </td>
 <td width="50%">
-<p align="center"><img src="assets/mobile.png" width="46%" alt="移动端"></p>
-<p align="center"><sub>移动端 · 面板改为底部抽屉</sub></p>
+<img src="assets/panel-dark.png" alt="暗色主题">
+<p align="center"><sub>暗色主题 · 同一面板与歌单</sub></p>
 </td>
 </tr>
 <tr>
@@ -45,9 +45,15 @@
 <p align="center"><sub>Travis Scott · 主色 <code>#a83232</code></sub></p>
 </td>
 </tr>
+<tr>
+<td colspan="2">
+<p align="center"><img src="assets/mobile.png" width="23%" alt="移动端"></p>
+<p align="center"><sub>移动端 · 面板改为底部抽屉</sub></p>
+</td>
+</tr>
 </table>
 
-<p align="center"><sub>最后两张是<strong>同一个界面</strong>切到不同艺人的效果 —— 3D 背景与控件配色都由艺人主色推导，选中专辑后改用专辑色。</sub></p>
+<p align="center"><sub>Drake / Travis Scott 两张是<strong>同一个界面</strong>切到不同艺人的效果 —— 3D 背景与控件配色都由艺人主色推导，选中专辑后改用专辑色。</sub></p>
 
 ---
 
