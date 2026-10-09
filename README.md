@@ -49,14 +49,20 @@
 </td>
 </tr>
 <tr>
-<td colspan="2">
-<p align="center"><img src="assets/mobile.png" width="23%" alt="移动端"></p>
-<p align="center"><sub>移动端 · 面板改为底部抽屉</sub></p>
+<td width="50%">
+<p align="center"><img src="assets/artist-picker-mobile.png" width="46%" alt="移动端开场选人"></p>
+<p align="center"><sub>移动端 · 开场选人</sub></p>
+</td>
+<td width="50%">
+<p align="center"><img src="assets/mobile.png" width="46%" alt="移动端专辑轮播"></p>
+<p align="center"><sub>移动端 · 专辑轮播</sub></p>
 </td>
 </tr>
 </table>
 
 <p align="center"><sub>Drake / Travis Scott 两张是<strong>同一个界面</strong>切到不同艺人的效果 —— 3D 背景与控件配色都由艺人主色推导，选中专辑后改用专辑色。</sub></p>
+
+<p align="center"><sub>移动端不是缩小版：顶栏压缩为图标按钮，曲目面板改为从底部滑出的抽屉（占 56% 视口高），唱片架支持触摸滑动。</sub></p>
 
 ---
 

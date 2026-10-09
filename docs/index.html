@@ -125,22 +125,27 @@ section{padding:96px 0}
 .card img{width:100%;cursor:zoom-in;transition:transform .6s var(--ease)}
 .card:hover img{transform:scale(1.02)}
 .card figcaption{padding:12px 16px;font-size:13px;color:var(--tx-3);border-top:1px solid var(--line);background:var(--surface)}
-/* 移动端那张横跨整行：左手机截图 + 右说明，避免整行大片留白 */
-.card.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);align-items:center}
-.card.wide img{width:auto;height:440px;margin:34px auto}
+/* 移动端那张横跨整行：左侧两张手机截图 + 右侧说明，避免整行大片留白 */
+.card.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:center}
+.card.wide .phones{display:flex;justify-content:center;align-items:flex-start;gap:26px;padding:34px 24px;min-width:0}
+.card.wide .phone{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.card.wide .phone img{width:auto;height:400px;border-radius:var(--r-md);box-shadow:var(--shadow-sm)}
+.card.wide .phone span{font-size:12px;color:var(--tx-3);white-space:nowrap}
 .card.wide figcaption{
   border-top:0;border-left:1px solid var(--line);align-self:stretch;
-  display:flex;flex-direction:column;justify-content:center;gap:9px;padding:44px 56px;
+  display:flex;flex-direction:column;justify-content:center;gap:9px;padding:44px 48px;
 }
 .card.wide figcaption b{font-size:15.5px;font-weight:600;color:var(--tx)}
-.card.wide figcaption span{font-size:13.5px;line-height:1.75;color:var(--tx-3);max-width:46ch}
+.card.wide figcaption span{font-size:13.5px;line-height:1.75;color:var(--tx-3)}
 .card.wide ul{margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
 .card.wide li{position:relative;padding-left:17px;font-size:13px;line-height:1.6;color:var(--tx-3)}
 .card.wide li::before{content:"";position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--gold)}
 .card.wide li b{font-size:13px;font-weight:600;color:var(--tx-2)}
 @media(max-width:760px){
   .card.wide{grid-template-columns:1fr}
-  .card.wide img{height:auto;max-width:220px;margin:24px auto}
+  .card.wide .phones{gap:16px;padding:22px 12px}
+  .card.wide .phone img{height:262px}
+  .card.wide .phone span{font-size:11.5px}
   .card.wide figcaption{border-left:0;border-top:1px solid var(--line);padding:20px 22px}
 }
 
@@ -294,10 +299,19 @@ footer a:hover{color:var(--gold-ink);border-color:var(--gold)}
         <figcaption>Travis Scott · 主色 #a83232</figcaption>
       </figure>
       <figure class="card wide">
-        <img src="assets/mobile.jpg" width="554" height="1200" loading="lazy" alt="移动端：顶栏压缩为图标，曲目面板从底部滑出">
+        <div class="phones">
+          <div class="phone">
+            <img src="assets/artist-picker-mobile.jpg" width="554" height="1200" loading="lazy" alt="移动端开场选人界面">
+            <span>开场选人</span>
+          </div>
+          <div class="phone">
+            <img src="assets/mobile.jpg" width="554" height="1200" loading="lazy" alt="移动端专辑轮播">
+            <span>专辑轮播</span>
+          </div>
+        </div>
         <figcaption>
-          <b>移动端 · 面板改为底部抽屉</b>
-          <span>窄屏下顶栏压缩成图标按钮，曲目面板从底部滑出，不再遮挡唱片架。</span>
+          <b>移动端 · 顶栏压缩、面板改底部抽屉</b>
+          <span>窄屏下不是缩小版，而是重新排过版：顶栏收成图标，面板从底部滑出。</span>
           <ul>
             <li><b>顶栏</b>　艺人胶囊限宽，按钮固定 36px，互相不挤压</li>
             <li><b>面板</b>　改为底部抽屉，占 56% 视口高</li>
