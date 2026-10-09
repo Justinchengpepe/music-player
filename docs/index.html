@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vinyl Archive · 3D 黑胶唱片架音乐播放器</title>
+<meta name="description" content="一个跑在浏览器里的 3D 黑胶唱片架音乐播放器。Three.js 手写场景 + 原生 ES Module，零构建步骤；后端是零框架 Node 服务，代理网易云 API 并匹配高清封面。内置 30 位艺人、156 张专辑。">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d14" media="(prefers-color-scheme: dark)">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Vinyl Archive · 3D 黑胶唱片架音乐播放器">
+<meta property="og:description" content="把唱片铺成一面墙，点开就能放。Three.js 手写 3D 场景，零构建步骤，内置 30 位艺人 156 张专辑。">
+<meta property="og:image" content="https://justinchengpepe.github.io/music-player/assets/shelf.jpg">
+<meta property="og:url" content="https://justinchengpepe.github.io/music-player/">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="800">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23131210'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23d4a853' stroke-width='1.4' opacity='.55'/%3E%3Ccircle cx='16' cy='16' r='5.5' fill='none' stroke='%23d4a853' stroke-width='1.4' opacity='.8'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%23d4a853'/%3E%3C/svg%3E">
+
+<style>
+:root{
+  --bg:#ffffff;
+  --surface:#ffffff;
+  --surface-2:#f5f4f1;
+  --surface-3:#e9e7e1;
+  --line:rgba(17,16,13,.085);
+  --line-2:rgba(17,16,13,.16);
+  --tx:#131210;
+  --tx-2:rgba(19,18,16,.60);
+  --tx-3:rgba(19,18,16,.40);
+  --gold:#d4a853;
+  --gold-ink:#8a6a1f;
+  --shadow:0 22px 60px rgba(19,18,16,.14),0 2px 10px rgba(19,18,16,.05);
+  --shadow-sm:0 4px 18px rgba(19,18,16,.08),0 1px 3px rgba(19,18,16,.04);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --r-sm:9px;--r-md:13px;--r-lg:18px;--r-xl:24px;--r-pill:999px;
+  --maxw:1080px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0d0d14;--surface:#15151d;--surface-2:#1c1c25;--surface-3:#282833;
+    --line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.18);
+    --tx:#f3f2ef;--tx-2:rgba(243,242,239,.60);--tx-3:rgba(243,242,239,.38);
+    --gold:#d4a853;--gold-ink:#e3c076;
+    --shadow:0 26px 68px rgba(0,0,0,.6),0 2px 10px rgba(0,0,0,.4);
+    --shadow-sm:0 6px 22px rgba(0,0,0,.45),0 1px 3px rgba(0,0,0,.3);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--tx);
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img{max-width:100%;display:block;border:0}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+/* ── 顶栏 ───────────────────────────── */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background:color-mix(in srgb,var(--bg) 82%,transparent);
+  backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.nav-in{max-width:var(--maxw);margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;gap:20px}
+.brand{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+.brand svg{width:22px;height:22px;flex-shrink:0}
+.nav-links{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:14px}
+.nav-links a{padding:7px 12px;border-radius:var(--r-pill);color:var(--tx-2);transition:color .25s var(--ease),background .25s var(--ease)}
+.nav-links a:hover{color:var(--tx);background:var(--surface-2)}
+.nav-links a.gh{color:var(--tx);border:1px solid var(--line-2);margin-left:8px}
+.nav-links a.gh:hover{background:var(--surface-2)}
+@media(max-width:720px){.nav-links a:not(.gh){display:none}}
+
+/* ── Hero ───────────────────────────── */
+.hero{position:relative;text-align:center;padding:88px 0 0;overflow-x:clip}
+.hero::before{
+  content:"";position:absolute;left:50%;top:-160px;transform:translateX(-50%);
+  width:min(1100px,100%);height:700px;pointer-events:none;z-index:0;
+  background:radial-gradient(circle at 50% 40%,var(--gold) 0%,transparent 58%);
+  opacity:.11;
+}
+.hero>*{position:relative;z-index:1}
+.eyebrow{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--tx-3);font-weight:600;margin:0 0 26px}
+h1{font-size:clamp(2.6rem,8vw,4.6rem);line-height:1.04;letter-spacing:-.028em;font-weight:600;margin:0 0 18px}
+.lede{font-size:clamp(1.05rem,2.6vw,1.35rem);color:var(--tx-2);margin:0 auto 20px;max-width:620px;letter-spacing:.01em}
+.sub{font-size:15px;color:var(--tx-3);margin:0 auto;max-width:660px;line-height:1.75}
+.stats{display:flex;justify-content:center;gap:14px;margin:38px 0 34px;flex-wrap:wrap}
+.stat{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 26px;min-width:112px}
+.stat b{display:block;font-size:26px;font-weight:600;letter-spacing:-.02em;color:var(--gold-ink);line-height:1.2}
+.stat span{font-size:12px;color:var(--tx-3);letter-spacing:.04em}
+.cta{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:64px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  height:46px;padding:0 24px;border-radius:var(--r-pill);
+  font-size:14.5px;font-weight:500;border:1px solid var(--line-2);
+  background:var(--surface);color:var(--tx);cursor:pointer;
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease),background .25s var(--ease),border-color .25s var(--ease);
+}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.btn.primary{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.btn.primary:hover{background:var(--gold);border-color:var(--gold);color:#1a1408}
+
+/* ── 大图 ───────────────────────────── */
+.shot{position:relative;border-radius:var(--r-xl);overflow:hidden;border:1px solid var(--line-2);box-shadow:var(--shadow);background:var(--surface-2)}
+.shot img{width:100%;height:auto}
+.hero-shot{max-width:1000px;margin:0 auto;padding:0 24px}
+
+/* ── 区块 ───────────────────────────── */
+section{padding:96px 0}
+.sec-head{text-align:center;margin-bottom:52px}
+.sec-head h2{font-size:clamp(1.6rem,4vw,2.1rem);letter-spacing:-.02em;font-weight:600;margin:0 0 12px}
+.sec-head p{color:var(--tx-3);margin:0;font-size:15px}
+.sec-head .kicker{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-ink);font-weight:600;margin-bottom:14px}
+
+/* 画廊 */
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:760px){.gallery{grid-template-columns:1fr}}
+.card{border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--line);background:var(--surface-2)}
+.card img{width:100%;cursor:zoom-in;transition:transform .6s var(--ease)}
+.card:hover img{transform:scale(1.02)}
+.card figcaption{padding:12px 16px;font-size:13px;color:var(--tx-3);border-top:1px solid var(--line);background:var(--surface)}
+.gallery .tall{display:flex;flex-direction:column}
+.gallery .tall img{margin:auto}
+
+/* 功能 */
+.feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:16px}
+.feat{padding:22px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--surface-2);transition:border-color .3s var(--ease),transform .3s var(--ease)}
+.feat:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.feat h3{margin:0 0 8px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:9px}
+.feat h3::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.feat p{margin:0;font-size:13.5px;color:var(--tx-2);line-height:1.65}
+.feat code,.run code{background:var(--surface-3);padding:1.5px 6px;border-radius:5px;font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--tx-2)}
+
+/* 运行方式 */
+.runs{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:860px){.runs{grid-template-columns:1fr}}
+.runs>*{min-width:0}
+.run{padding:26px 24px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--surface-2);display:flex;flex-direction:column;min-width:0}
+.run .tag{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3);font-weight:600;margin:0 0 12px;flex:none}
+.run h3{margin:0 0 8px;font-size:17px;font-weight:600;flex:none}
+.run p{margin:0 0 18px;font-size:13.5px;color:var(--tx-2);flex:none}
+.run .who{font-size:12.5px;color:var(--tx-3);margin-bottom:16px}
+.run .btn{width:100%;justify-content:center;height:42px;font-size:13.5px}
+/* 让最后一块（按钮 / 代码块）贴到卡片底部，三张卡视觉对齐 */
+.run>:last-child{margin-top:auto}
+.code{border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;background:var(--surface);min-width:0}
+.code-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px 6px 12px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.code-bar span{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx-3);font-weight:600}
+.copy{
+  font-family:inherit;font-size:11.5px;flex-shrink:0;
+  padding:4px 10px;border-radius:var(--r-pill);border:1px solid var(--line-2);
+  background:var(--surface);color:var(--tx-2);cursor:pointer;transition:all .25s var(--ease);
+}
+.copy:hover{color:var(--tx);border-color:var(--gold)}
+.code-body{
+  padding:11px 12px;color:var(--tx-2);
+  font:11.5px/1.75 ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  white-space:pre-wrap;overflow-wrap:anywhere;
+}
+
+/* 提示框 */
+.note{
+  margin-top:44px;padding:26px 28px;border-radius:var(--r-lg);
+  border:1px solid var(--line-2);background:var(--surface-2);
+  border-left:3px solid var(--gold);
+}
+.note h3{margin:0 0 10px;font-size:15.5px;font-weight:600}
+.note p{margin:0 0 10px;font-size:13.5px;color:var(--tx-2);line-height:1.72}
+.note p:last-child{margin-bottom:0}
+.note code{background:var(--surface-3);padding:1.5px 6px;border-radius:5px;font:12.5px ui-monospace,Menlo,monospace}
+
+/* 技术条 */
+.stack{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:34px}
+.pill{font-size:12.5px;color:var(--tx-2);border:1px solid var(--line);background:var(--surface-2);border-radius:var(--r-pill);padding:6px 15px}
+
+/* 页脚 */
+footer{border-top:1px solid var(--line);padding:44px 0 60px;text-align:center}
+footer p{margin:0 0 8px;font-size:13px;color:var(--tx-3);line-height:1.8}
+footer a{color:var(--tx-2);border-bottom:1px solid var(--line-2)}
+footer a:hover{color:var(--gold-ink);border-color:var(--gold)}
+
+/* 灯箱 */
+.lb{position:fixed;inset:0;z-index:100;background:rgba(9,8,6,.9);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;padding:32px;cursor:zoom-out}
+.lb.on{display:flex;animation:lbIn .3s var(--ease)}
+.lb img{max-width:100%;max-height:100%;border-radius:var(--r-md);box-shadow:var(--shadow)}
+@keyframes lbIn{from{opacity:0}to{opacity:1}}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="15" fill="currentColor"/>
+        <circle cx="16" cy="16" r="9" fill="none" stroke="#d4a853" stroke-width="1.4" opacity=".5"/>
+        <circle cx="16" cy="16" r="5.5" fill="none" stroke="#d4a853" stroke-width="1.4" opacity=".75"/>
+        <circle cx="16" cy="16" r="2" fill="#d4a853"/>
+      </svg>
+      <span>Vinyl Archive</span>
+    </a>
+    <div class="nav-links">
+      <a href="#shots">界面</a>
+      <a href="#features">功能</a>
+      <a href="#run">怎么跑</a>
+      <a class="gh" href="https://github.com/Justinchengpepe/music-player">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <p class="eyebrow">3D 黑胶唱片架音乐播放器</p>
+    <h1>Vinyl Archive</h1>
+    <p class="lede">把唱片铺成一面墙，点开就能放。</p>
+    <p class="sub">
+      前端是手写的 Three.js 场景 + 原生 ES Module，<strong>没有任何构建步骤</strong>；
+      后端是一个零框架的 Node 服务，只负责代理网易云 API、匹配高清封面。
+    </p>
+
+    <div class="stats">
+      <div class="stat"><b>30</b><span>位艺人</span></div>
+      <div class="stat"><b>156</b><span>张专辑</span></div>
+      <div class="stat"><b>0</b><span>构建步骤</span></div>
+    </div>
+
+    <div class="cta">
+      <a class="btn primary" href="https://codespaces.new/Justinchengpepe/music-player">在 Codespaces 里跑起来</a>
+      <a class="btn" href="https://github.com/Justinchengpepe/music-player">查看源码</a>
+    </div>
+  </div>
+
+  <div class="hero-shot">
+    <div class="shot"><img src="assets/shelf.jpg" width="1280" height="800" alt="3D 黑胶唱片架：专辑封面铺成一面墙"></div>
+  </div>
+</header>
+
+<section id="shots">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="kicker">Screens</p>
+      <h2>界面一览</h2>
+      <p>从选人到播放，全部在浏览器里渲染。点任意一张可放大。</p>
+    </div>
+
+    <div class="gallery">
+      <figure class="card">
+        <img src="assets/artist-picker.jpg" width="1280" height="800" loading="lazy" alt="开场选人界面">
+        <figcaption>开场选人 · 艺人无限轮播，滚轮 / 滑动切换</figcaption>
+      </figure>
+      <figure class="card">
+        <img src="assets/album-panel.jpg" width="1280" height="800" loading="lazy" alt="曲目面板">
+        <figcaption>曲目面板 · 播放中高亮 / 进度拖拽</figcaption>
+      </figure>
+      <figure class="card">
+        <img src="assets/lyrics.jpg" width="1280" height="800" loading="lazy" alt="黑胶歌词页">
+        <figcaption>黑胶歌词页 · 唱针随进度由外圈移向内圈</figcaption>
+      </figure>
+      <figure class="card">
+        <img src="assets/panel-dark.jpg" width="1280" height="800" loading="lazy" alt="暗色主题">
+        <figcaption>暗色主题 · 同一面板与歌单</figcaption>
+      </figure>
+      <figure class="card">
+        <img src="assets/accent-drake.jpg" width="1280" height="800" loading="lazy" alt="Drake 主题色">
+        <figcaption>Drake · 主色 #4a90d9</figcaption>
+      </figure>
+      <figure class="card">
+        <img src="assets/accent-travisscott.jpg" width="1280" height="800" loading="lazy" alt="Travis Scott 主题色">
+        <figcaption>Travis Scott · 主色 #a83232</figcaption>
+      </figure>
+      <figure class="card tall" style="grid-column:1/-1">
+        <img src="assets/mobile.jpg" width="554" height="1200" loading="lazy" alt="移动端" style="max-width:260px">
+        <figcaption>移动端 · 面板改为底部抽屉</figcaption>
+      </figure>
+    </div>
+
+    <p style="text-align:center;font-size:13px;color:var(--tx-3);margin-top:26px">
+      Drake / Travis Scott 两张是<strong>同一个界面</strong>切到不同艺人的效果 —— 3D 背景与控件配色都由艺人主色推导，选中专辑后改用专辑色。
+    </p>
+  </div>
+</section>
+
+<section id="features" style="background:var(--surface-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="kicker">Features</p>
+      <h2>它做了什么</h2>
+    </div>
+    <div class="feats">
+      <div class="feat"><h3>3D 唱片墙</h3><p>Three.js 渲染的封面墙，悬停高亮、点击翻面、镜头推进。</p></div>
+      <div class="feat"><h3>黑胶歌词页</h3><p>独立场景，唱针随播放进度从外圈移向内圈，歌词逐行高亮。</p></div>
+      <div class="feat"><h3>艺人切换</h3><p>开场是无限循环的艺人轮播，滚轮 / 滑动 / 点击均可切换。</p></div>
+      <div class="feat"><h3>曲目面板</h3><p>侧滑面板展示曲目，播放中高亮、进度条拖拽、播放暂停。</p></div>
+      <div class="feat"><h3>双主题</h3><p>亮色 / 暗色一键切换；背景与控件主色由当前艺人推导，选中专辑后改用专辑色。</p></div>
+      <div class="feat"><h3>移动端适配</h3><p>响应式布局，窄屏下曲目面板自动改为底部抽屉。</p></div>
+      <div class="feat"><h3>一行命令加歌手</h3><p><code>npm run add-artist "歌手名"</code> 自动补齐 ID、专辑、封面、头像、主题色。</p></div>
+      <div class="feat"><h3>扫码登录</h3><p>二维码登录网易云账号，解锁 999kbps 高码率播放。</p></div>
+      <div class="feat"><h3>封面自动匹配</h3><p>iTunes Lookup API 按专辑名归一化匹配 600×600 高清封面，网易云封面兜底。</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="run">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="kicker">Get started</p>
+      <h2>怎么跑起来</h2>
+      <p>这个项目<strong>不是静态网页</strong>，必须有一个 Node 服务在跑。三种用法，按省事程度排。</p>
+    </div>
+
+    <div class="runs">
+      <div class="run">
+        <p class="tag">方式一</p>
+        <h3>Codespaces</h3>
+        <p class="who">适合：只想看看效果，或想改点代码试试</p>
+        <p>点一下按钮，容器自动装依赖、自动起服务、自动弹出预览。全程零安装。</p>
+        <a class="btn primary" href="https://codespaces.new/Justinchengpepe/music-player">一键打开</a>
+      </div>
+
+      <div class="run">
+        <p class="tag">方式二</p>
+        <h3>本地运行</h3>
+        <p class="who">适合：想长期自己用，想加自己的歌手</p>
+        <p>需要 Node.js 18+（推荐 22）。首次冷启动要加载网易云模块，约 30–60 秒。</p>
+        <div class="code">
+          <div class="code-bar">
+            <span>Terminal</span>
+            <button class="copy" type="button" data-copy="git clone https://github.com/Justinchengpepe/music-player.git&#10;cd music-player &amp;&amp; npm install &amp;&amp; npm start">复制</button>
+          </div>
+          <div class="code-body">git clone https://github.com/Justinchengpepe/music-player.git
+cd music-player &amp;&amp; npm install &amp;&amp; npm start</div>
+        </div>
+      </div>
+
+      <div class="run">
+        <p class="tag">方式三</p>
+        <h3>部署到公网</h3>
+        <p class="who">适合：想让别人点个链接就能用</p>
+        <p>仓库内含 <code>deploy.sh</code>（Ubuntu + PM2）与 <code>.railwayignore</code>，连上 GitHub 仓库即可部署。</p>
+        <a class="btn" href="https://github.com/Justinchengpepe/music-player#%E9%83%A8%E7%BD%B2">查看部署说明</a>
+      </div>
+    </div>
+
+    <div class="note">
+      <h3>为什么不能部署到 GitHub Pages？</h3>
+      <p>
+        因为 GitHub 在这里的角色是「代码托管」，不是「运行环境」。
+        页面里那 11 个 <code>/api/*</code> 接口（艺人列表、专辑曲目、播放地址、歌词、扫码登录…）
+        都必须由 <code>server.js</code> 在服务端转发给网易云 —— 浏览器直连会被 CORS 挡死。
+      </p>
+      <p>
+        而 GitHub Pages 只会把 HTML / CSS / JS 原样发出去，<strong>不执行任何 Node 代码</strong>，
+        所以传上去之后所有接口都会 404，页面直接白屏。同理，直接双击 <code>index.html</code> 打开也会白屏。
+      </p>
+      <p>
+        你现在看到的这一页，是项目的<strong>展示页</strong>，它本身是纯静态的，所以能放在 Pages 上；
+        但真正的播放器要跑起来，得走上面三种方式之一。
+      </p>
+    </div>
+
+    <div class="stack">
+      <span class="pill">Three.js r160（本地内置，不走 CDN）</span>
+      <span class="pill">原生 ES Module · importmap</span>
+      <span class="pill">零构建步骤</span>
+      <span class="pill">零框架 Node 服务</span>
+      <span class="pill">NeteaseCloudMusicApi</span>
+      <span class="pill">登录态按访客隔离</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>
+      <a href="https://github.com/Justinchengpepe/music-player">github.com/Justinchengpepe/music-player</a>
+    </p>
+    <p>仅用于个人学习与技术研究，音乐内容版权归各唱片公司及平台所有。</p>
+    <p>网易云接口通过开源库 NeteaseCloudMusicApi 调用，请遵守对应平台的服务条款。</p>
+  </div>
+</footer>
+
+<div class="lb" id="lb"><img alt="放大预览"></div>
+
+<script>
+(function(){
+  var lb = document.getElementById('lb');
+  var lbImg = lb.querySelector('img');
+  document.querySelectorAll('.card img').forEach(function(img){
+    img.addEventListener('click', function(){
+      lbImg.src = img.currentSrc || img.src;
+      lbImg.alt = img.alt || '';
+      lb.classList.add('on');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+  function close(){
+    lb.classList.remove('on');
+    document.body.style.overflow = '';
+  }
+  lb.addEventListener('click', close);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
+
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var text = btn.getAttribute('data-copy');
+      var done = function(){
+        btn.textContent = '已复制';
+        setTimeout(function(){ btn.textContent = '复制'; }, 1600);
+      };
+      if(navigator.clipboard && window.isSecureContext){
+        navigator.clipboard.writeText(text).then(done).catch(fallback);
+      } else { fallback(); }
+      function fallback(){
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try{ document.execCommand('copy'); done(); }catch(e){ btn.textContent = '请手动复制'; }
+        document.body.removeChild(ta);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
