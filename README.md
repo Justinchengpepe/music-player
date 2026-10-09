@@ -8,6 +8,9 @@
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Justinchengpepe/music-player)
 
+> **在线展示页** → <https://justinchengpepe.github.io/music-player/>
+> 这是项目的静态展示页，能看界面截图和用法说明；真正的播放器要跑 Node 服务，见下方[怎么跑起来](#怎么跑起来)。
+
 ![3D 唱片架](assets/shelf.png)
 
 ---
@@ -123,6 +126,9 @@ npm start
 
 想让别人点开链接就能用，得走上面的方式三。
 
+> 顺带一提：项目的[在线展示页](https://justinchengpepe.github.io/music-player/)确实挂在 GitHub Pages 上 ——
+> 因为它是纯静态的。但它只能展示截图和说明，点不动、放不了歌。
+
 > 首次启动要加载网易云模块（9MB / 400+ 文件），**冷启动约 30–60 秒属正常现象**。
 
 ---
@@ -156,6 +162,7 @@ npm start
 ├── js/
 │   └── three.module.js    # Three.js r160 运行时（本地内置，不走 CDN）
 ├── assets/                # README 配图
+├── docs/                  # GitHub Pages 展示页（纯静态，与播放器无关）
 ├── .devcontainer/         # Codespaces 配置：devcontainer.json + start.sh
 ├── deploy.sh              # Ubuntu / Oracle Cloud 一键部署脚本
 ├── .railwayignore         # Railway 部署忽略规则
@@ -302,6 +309,17 @@ cp musickit.example.json musickit.json
 ---
 
 ## 部署
+
+### GitHub Pages（只放展示页）
+
+`docs/` 是纯静态的项目展示页，已发布在 <https://justinchengpepe.github.io/music-player/>。
+
+```bash
+gh api -X POST repos/Justinchengpepe/music-player/pages \
+  --input <(echo '{"source":{"branch":"main","path":"/docs"}}')
+```
+
+改完 `docs/` 推到 main，Pages 会自动重新构建。**它只能展示截图，不能播放音乐** —— 原因见上。
 
 ### 通用 Linux 服务器
 
