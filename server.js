@@ -353,8 +353,9 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  let filePath = path.join(__dirname, req.url === '/' ? 'ye.html' : req.url.split('?')[0]);
-  if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) filePath = path.join(__dirname, 'ye.html');
+  const INDEX = 'index.html';
+  let filePath = path.join(__dirname, req.url === '/' ? INDEX : req.url.split('?')[0]);
+  if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) filePath = path.join(__dirname, INDEX);
 
   res.writeHead(200, { 'Content-Type': MIME[path.extname(filePath)] || 'application/octet-stream' });
   fs.createReadStream(filePath).pipe(res);

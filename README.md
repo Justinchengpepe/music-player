@@ -62,7 +62,7 @@ npm start
 
 > **这不是静态网页。**
 > 页面要调网易云 API，浏览器直连会被 CORS 挡死，必须有 Node 服务在后端转发。
-> 所以它**不能**部署到 GitHub Pages，也**不能**直接双击 `ye.html` 打开（会白屏）——
+> 所以它**不能**部署到 GitHub Pages，也**不能**直接双击 `index.html` 打开（会白屏）——
 > 必须把仓库 clone 下来跑起来。
 >
 > 首次启动要加载网易云模块（9MB / 400+ 文件），冷启动约 30–60 秒属正常现象。
@@ -87,9 +87,9 @@ npm start
 
 ```
 .
+├── index.html             # ★ 唯一页面：3D 唱片架 + 曲目面板 + 歌词场景
 ├── server.js              # Node 服务：静态文件 + API 代理 + MusicKit 签名
 ├── artists.json           # ★ 艺人数据，唯一来源。加歌手只改这个文件
-├── ye.html                # 唯一页面：3D 唱片架 + 曲目面板 + 歌词场景
 ├── lib/
 │   ├── music.js           # 专辑名归一化、版本标记判断、主题色推导（纯函数）
 │   └── sources.js         # 网易云 / iTunes 数据源封装
@@ -98,7 +98,6 @@ npm start
 ├── js/
 │   └── three.module.js    # Three.js r160 运行时（本地内置，不走 CDN）
 ├── assets/                # README 配图
-├── vinyl.jpg / vinyl.png  # 黑胶唱片纹理
 ├── deploy.sh              # Ubuntu / Oracle Cloud 一键部署脚本
 ├── .railwayignore         # Railway 部署忽略规则
 ├── musickit.example.json  # MusicKit 配置模板
