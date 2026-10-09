@@ -16,24 +16,36 @@
 <tr>
 <td width="50%">
 <img src="assets/album-panel.png" alt="专辑面板">
-<p align="center"><sub>侧滑面板 · 曲目列表 / 播放中高亮 / 进度拖拽</sub></p>
+<p align="center"><sub>曲目面板 · 播放中高亮 / 进度拖拽</sub></p>
 </td>
 <td width="50%">
 <img src="assets/lyrics.png" alt="黑胶歌词页">
-<p align="center"><sub>歌词页 · 唱针随进度由外圈移向内圈</sub></p>
+<p align="center"><sub>黑胶歌词页 · 唱针随进度由外圈移向内圈</sub></p>
 </td>
 </tr>
 <tr>
 <td width="50%">
-<img src="assets/shelf-dark.png" alt="暗色主题">
-<p align="center"><sub>暗色主题 · 主色跟随当前艺人变化</sub></p>
+<img src="assets/panel-dark.png" alt="暗色主题">
+<p align="center"><sub>暗色主题 · 同一面板与歌单</sub></p>
 </td>
 <td width="50%">
 <p align="center"><img src="assets/mobile.png" width="46%" alt="移动端"></p>
 <p align="center"><sub>移动端 · 面板改为底部抽屉</sub></p>
 </td>
 </tr>
+<tr>
+<td width="50%">
+<img src="assets/accent-drake.png" alt="Drake 主色">
+<p align="center"><sub>Drake · 主色 <code>#4a90d9</code></sub></p>
+</td>
+<td width="50%">
+<img src="assets/accent-travisscott.png" alt="Travis Scott 主色">
+<p align="center"><sub>Travis Scott · 主色 <code>#a83232</code></sub></p>
+</td>
+</tr>
 </table>
+
+<p align="center"><sub>最后两张是<strong>同一个界面</strong>切到不同艺人的效果 —— 3D 背景与控件配色都由艺人主色推导，选中专辑后改用专辑色。</sub></p>
 
 ---
 
@@ -63,7 +75,7 @@ npm start
 - **黑胶歌词页** —— 独立场景，唱针随播放进度从外圈移向内圈，歌词逐行高亮
 - **艺人切换** —— 开场是无限循环的艺人轮播，滚轮 / 滑动 / 点击均可切换
 - **曲目面板** —— 侧滑面板展示曲目，播放中高亮、进度条拖拽、播放 / 暂停
-- **双主题** —— 亮色 / 暗色一键切换，主色跟随当前艺人动态变化
+- **双主题** —— 亮色 / 暗色一键切换；背景与控件主色由当前艺人推导（选中专辑后改用专辑色）
 - **移动端适配** —— 响应式布局，窄屏下曲目面板自动改为底部抽屉
 - **一行命令加歌手** —— `npm run add-artist "歌手名"` 自动补齐 ID、专辑、封面、头像、主题色
 - **扫码登录** —— 二维码登录网易云账号，解锁 999kbps 高码率播放
