@@ -55,7 +55,8 @@ body{
   font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
   -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
-img{max-width:100%;display:block;border:0}
+img{max-width:100%;height:auto;display:block;border:0}
+figure{margin:0}   /* 重置 UA 默认的 1em 40px，否则画廊卡片会比网格列窄 80px */
 a{color:inherit;text-decoration:none}
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
 
@@ -124,8 +125,24 @@ section{padding:96px 0}
 .card img{width:100%;cursor:zoom-in;transition:transform .6s var(--ease)}
 .card:hover img{transform:scale(1.02)}
 .card figcaption{padding:12px 16px;font-size:13px;color:var(--tx-3);border-top:1px solid var(--line);background:var(--surface)}
-.gallery .tall{display:flex;flex-direction:column}
-.gallery .tall img{margin:auto}
+/* 移动端那张横跨整行：左手机截图 + 右说明，避免整行大片留白 */
+.card.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);align-items:center}
+.card.wide img{width:auto;height:440px;margin:34px auto}
+.card.wide figcaption{
+  border-top:0;border-left:1px solid var(--line);align-self:stretch;
+  display:flex;flex-direction:column;justify-content:center;gap:9px;padding:44px 56px;
+}
+.card.wide figcaption b{font-size:15.5px;font-weight:600;color:var(--tx)}
+.card.wide figcaption span{font-size:13.5px;line-height:1.75;color:var(--tx-3);max-width:46ch}
+.card.wide ul{margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.card.wide li{position:relative;padding-left:17px;font-size:13px;line-height:1.6;color:var(--tx-3)}
+.card.wide li::before{content:"";position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--gold)}
+.card.wide li b{font-size:13px;font-weight:600;color:var(--tx-2)}
+@media(max-width:760px){
+  .card.wide{grid-template-columns:1fr}
+  .card.wide img{height:auto;max-width:220px;margin:24px auto}
+  .card.wide figcaption{border-left:0;border-top:1px solid var(--line);padding:20px 22px}
+}
 
 /* 功能 */
 .feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:16px}
@@ -276,9 +293,18 @@ footer a:hover{color:var(--gold-ink);border-color:var(--gold)}
         <img src="assets/accent-travisscott.jpg" width="1280" height="800" loading="lazy" alt="Travis Scott 主题色">
         <figcaption>Travis Scott · 主色 #a83232</figcaption>
       </figure>
-      <figure class="card tall" style="grid-column:1/-1">
-        <img src="assets/mobile.jpg" width="554" height="1200" loading="lazy" alt="移动端" style="max-width:260px">
-        <figcaption>移动端 · 面板改为底部抽屉</figcaption>
+      <figure class="card wide">
+        <img src="assets/mobile.jpg" width="554" height="1200" loading="lazy" alt="移动端：顶栏压缩为图标，曲目面板从底部滑出">
+        <figcaption>
+          <b>移动端 · 面板改为底部抽屉</b>
+          <span>窄屏下顶栏压缩成图标按钮，曲目面板从底部滑出，不再遮挡唱片架。</span>
+          <ul>
+            <li><b>顶栏</b>　艺人胶囊限宽，按钮固定 36px，互相不挤压</li>
+            <li><b>面板</b>　改为底部抽屉，占 56% 视口高</li>
+            <li><b>歌词页</b>　歌词横铺到底部，唱针动画照常</li>
+            <li><b>手势</b>　唱片架支持触摸滑动，带惯性吸附</li>
+          </ul>
+        </figcaption>
       </figure>
     </div>
 
