@@ -1,6 +1,8 @@
 # ---- 凭证：绝对不要提交 ----
 .netease_cookie
 musickit.json
+.env
+.env.*
 
 # ---- 依赖 ----
 node_modules/

@@ -1,22 +1,73 @@
-# Vinyl Discography Player
+# Vinyl Archive
 
-一个 **3D 黑胶唱片架**风格的音乐播放器。在浏览器里把唱片铺成一面墙，点击封面即可翻看曲目、播放歌曲，配合网易云音乐 API 解锁完整播放。
+**把唱片铺成一面墙，点开就能放。**
 
-前端是纯手写的 Three.js 场景 + 原生 ES Module，**没有任何构建步骤**；后端是一个零框架的 Node.js 服务，负责代理网易云 API、抓取专辑封面、签发 Apple MusicKit Token。
+一个跑在浏览器里的 3D 黑胶唱片架音乐播放器。前端是手写的 Three.js 场景 + 原生 ES Module，**没有任何构建步骤**；后端是一个零框架的 Node 服务，只负责代理网易云 API、匹配高清封面。
+
+内置 **30 位说唱 / R&B 艺人**、**156 张正式录音室专辑**。
+
+![3D 唱片架](assets/shelf.png)
 
 ---
 
-## 功能特性
+## 界面一览
 
-- **3D 唱片墙** — Three.js 渲染的专辑封面墙，支持悬停高亮、点击翻面、镜头推进
-- **艺人切换** — 内置 30 位说唱 / R&B 艺人的正式录音室专辑清单（Kanye West、Drake、Kendrick Lamar、Frank Ocean、Tyler The Creator、Travis Scott 等）
-- **一行命令加歌手** — `npm run add-artist "歌手名"` 自动补齐 ID、专辑、封面、头像、主题色
-- **曲目面板** — 侧滑面板展示曲目列表，支持播放中高亮、进度条拖拽、播放/暂停
-- **歌词场景** — 独立黑胶歌词页，唱针随进度从外圈移向内圈
-- **双主题** — 亮色 / 暗色一键切换，配色随艺人主色动态变化
-- **移动端适配** — 响应式布局，窄屏下曲目面板自动改为底部抽屉
-- **扫码登录** — 通过二维码登录网易云账号，解锁 999kbps 高码率播放
-- **封面自动匹配** — 用 iTunes Lookup API 按专辑名归一化匹配 600×600 高清封面，网易云封面作为兜底
+<table>
+<tr>
+<td width="50%">
+<img src="assets/album-panel.png" alt="专辑面板">
+<p align="center"><sub>侧滑面板 · 曲目列表 / 播放中高亮 / 进度拖拽</sub></p>
+</td>
+<td width="50%">
+<img src="assets/lyrics.png" alt="黑胶歌词页">
+<p align="center"><sub>歌词页 · 唱针随进度由外圈移向内圈</sub></p>
+</td>
+</tr>
+<tr>
+<td width="50%">
+<img src="assets/shelf-dark.png" alt="暗色主题">
+<p align="center"><sub>暗色主题 · 主色跟随当前艺人变化</sub></p>
+</td>
+<td width="50%">
+<p align="center"><img src="assets/mobile.png" width="46%" alt="移动端"></p>
+<p align="center"><sub>移动端 · 面板改为底部抽屉</sub></p>
+</td>
+</tr>
+</table>
+
+---
+
+## 快速开始
+
+```bash
+git clone https://github.com/Justinchengpepe/music-player.git
+cd music-player
+npm install
+npm start
+```
+
+浏览器打开 **http://localhost:8088** 即可。需要 Node.js 18+（推荐 20）。
+
+> **这不是静态网页。**
+> 页面要调网易云 API，浏览器直连会被 CORS 挡死，必须有 Node 服务在后端转发。
+> 所以它**不能**部署到 GitHub Pages，也**不能**直接双击 `ye.html` 打开（会白屏）——
+> 必须把仓库 clone 下来跑起来。
+>
+> 首次启动要加载网易云模块（9MB / 400+ 文件），冷启动约 30–60 秒属正常现象。
+
+---
+
+## 功能
+
+- **3D 唱片墙** —— Three.js 渲染的封面墙，悬停高亮、点击翻面、镜头推进
+- **黑胶歌词页** —— 独立场景，唱针随播放进度从外圈移向内圈，歌词逐行高亮
+- **艺人切换** —— 开场是无限循环的艺人轮播，滚轮 / 滑动 / 点击均可切换
+- **曲目面板** —— 侧滑面板展示曲目，播放中高亮、进度条拖拽、播放 / 暂停
+- **双主题** —— 亮色 / 暗色一键切换，主色跟随当前艺人动态变化
+- **移动端适配** —— 响应式布局，窄屏下曲目面板自动改为底部抽屉
+- **一行命令加歌手** —— `npm run add-artist "歌手名"` 自动补齐 ID、专辑、封面、头像、主题色
+- **扫码登录** —— 二维码登录网易云账号，解锁 999kbps 高码率播放
+- **封面自动匹配** —— iTunes Lookup API 按专辑名归一化匹配 600×600 高清封面，网易云封面兜底
 
 ---
 
@@ -26,7 +77,6 @@
 .
 ├── server.js              # Node 服务：静态文件 + API 代理 + MusicKit 签名
 ├── artists.json           # ★ 艺人数据，唯一来源。加歌手只改这个文件
-├── package.json
 ├── ye.html                # 唯一页面：3D 唱片架 + 曲目面板 + 歌词场景
 ├── lib/
 │   ├── music.js           # 专辑名归一化、版本标记判断、主题色推导（纯函数）
@@ -34,58 +84,14 @@
 ├── scripts/
 │   └── add-artist.js      # 命令行加歌手工具
 ├── js/
-│   └── three.module.js    # Three.js 运行时（本地内置，不走 CDN）
+│   └── three.module.js    # Three.js r160 运行时（本地内置，不走 CDN）
+├── assets/                # README 配图
 ├── vinyl.jpg / vinyl.png  # 黑胶唱片纹理
 ├── deploy.sh              # Ubuntu / Oracle Cloud 一键部署脚本
 ├── .railwayignore         # Railway 部署忽略规则
 ├── musickit.example.json  # MusicKit 配置模板
 └── .gitignore
 ```
-
----
-
-## 快速开始
-
-```bash
-npm install
-npm start
-```
-
-打开 http://localhost:8088 即可。
-
-需要 Node.js 18+（推荐 20）。
-
----
-
-## 分享给别人 / 别人怎么用
-
-**这个项目不是静态网页**，页面要调网易云 API（浏览器直接调会被 CORS 挡死），
-所以必须有一个 Node 服务在后面转发。这意味着：
-
-- ❌ 不能部署到 GitHub Pages / 静态托管
-- ❌ 不能直接双击 `ye.html` 打开（会白屏）
-- ✅ 必须把仓库 clone 下来跑起来
-
-别人拿到你的仓库地址后，三步就能用：
-
-```bash
-git clone https://github.com/<你的用户名>/music-player.git
-cd music-player
-npm install && npm start
-```
-
-然后浏览器打开 http://localhost:8088，点右上角「登录」，用**自己的**网易云 App 扫码。
-
-### 登录态是按人隔离的
-
-这是本项目一个重要的设计：**服务器上不保存任何账号凭证。**
-
-- 扫码拿到的 Cookie 只写进**访客自己的浏览器**（localStorage）
-- 每次请求通过 `X-Netease-Cookie` 请求头带给服务端，服务端用完即弃
-- 服务端进程本身永远是「未登录」状态
-
-所以就算部署到公网，也是**谁登录就是谁的账号**，彼此完全看不到对方。
-换一台设备、换一个浏览器都要重新扫码 —— 这是预期行为。
 
 ---
 
@@ -149,9 +155,31 @@ npm run add-artist --list                              # 列出当前所有艺�
 
 - 归一化后完全相等才算命中（忽略大小写、括号内容、非字母数字字符）
 - 带 `(Deluxe)` / `(Live)` / `(Remix)` 等标记的版本会优先匹配同样带标记的那张
-- **匹配不上的专辑不会被静默丢弃** —— 会在服务端日志里打出 `⚠` 警告，同时通过接口的 `unmatched` 字段返回
+- **匹配不上的专辑不会被静默丢弃** —— 服务端日志会打出 `⚠` 警告，同时通过接口的 `unmatched` 字段返回
 
 所以专辑名打错时你能立刻发现，而不是过几天才注意到少了一张。
+
+---
+
+## 登录网易云（可选）
+
+不登录也能播放 30 秒试听片段；登录后解锁完整音质（999kbps）。
+
+点右上角「登录」，用网易云 App 扫码即可。已登录时点右上角胶囊可以退出。
+
+### 登录态是按人隔离的
+
+这是本项目一个重要的设计：**服务器上不保存任何账号凭证。**
+
+- 扫码拿到的 Cookie 只写进**访客自己的浏览器**（localStorage）
+- 每次请求通过 `X-Netease-Cookie` 请求头带给服务端，服务端用完即弃
+- 服务端进程本身永远是「未登录」状态
+
+所以就算部署到公网，也是**谁登录就是谁的账号**，彼此完全看不到对方。
+换设备、换浏览器都要重新扫码 —— 这是预期行为。
+
+> 早期版本会把 Cookie 存成服务端的 `.netease_cookie` 文件，一旦部署到公网就会导致
+> 「谁先扫码、之后所有访客都变成那个账号」。该行为已移除。
 
 ---
 
@@ -170,23 +198,14 @@ PORT=3000 NETEASE_PROXY=http://127.0.0.1:7890 npm start
 
 ## 配置 MusicKit（可选）
 
-只在使用 Apple Music 相关能力时才需要：
+服务端预留了 Apple MusicKit Developer Token 签发接口（`/api/musickit/token`，ES256 JWT），
+**当前前端并未调用**，属于为后续扩展保留的能力。
 
 ```bash
 cp musickit.example.json musickit.json
 ```
 
-填入你自己的 `teamId` / `keyId` / `privateKey`。该文件已在 `.gitignore` 中，不会被提交。
-
-## 登录网易云（可选）
-
-不登录也能播放试听片段；登录后可解锁完整音质。点击右上角「登录」，用网易云 App 扫码即可。
-
-Cookie 会保存在**你自己浏览器**的 localStorage 里，重启服务不丢，但换浏览器 / 换设备要重新扫码。
-已登录时点右上角胶囊可以退出登录。
-
-> 服务端**不会**把 Cookie 写到磁盘。早期版本会把 Cookie 存成 `.netease_cookie` 文件，
-> 一旦部署到公网就会导致「谁先扫码、之后所有访客都变成那个账号」—— 该行为已移除。
+填入自己的 `teamId` / `keyId` / `privateKey`。该文件已在 `.gitignore` 中，不会被提交。
 
 ---
 
@@ -199,7 +218,7 @@ Cookie 会保存在**你自己浏览器**的 localStorage 里，重启服务不�
 
 | 方法 | 路径 | 说明 |
 |---|---|---|
-| GET | `/api/artists` | 艺人列表（前端开场轮播用），含自动补全的 `color` / `avatar` |
+| GET | `/api/artists` | 艺人列表（开场轮播用），含自动补全的 `color` / `avatar` |
 | GET | `/api/artist/albums?id=<艺人ID>` | 某位艺人的专辑（含 iTunes 高清封面）与未匹配清单 `unmatched` |
 | GET | `/api/album?id=<专辑ID>` | 专辑详情与曲目列表 |
 | GET | `/api/song/url?id=<歌曲ID>` | 歌曲播放地址（带 Cookie 时返回 999kbps） |
@@ -231,7 +250,7 @@ cd /opt/vinyl-player && bash deploy.sh
 > **可以放心部署到公网。** 登录态按访客隔离，服务器不落盘任何账号凭证。
 > 只需确认 `musickit.json`（你的 Apple 私钥）没有被一并上传 —— 它已在 `.gitignore` 中排除。
 >
-> 建议用 HTTPS：Cookie 是通过请求头传给服务端的，明文 HTTP 下可能被中间人截获。
+> 建议启用 HTTPS：Cookie 是通过请求头传给服务端的，明文 HTTP 下可能被中间人截获。
 
 ---
 

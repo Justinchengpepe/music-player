@@ -1,13 +1,28 @@
 {
-  "name": "ipod-player",
+  "name": "vinyl-archive",
   "version": "1.0.0",
-  "description": "3D 黑胶唱片架音乐播放器 —— Three.js 前端 + 零框架 Node 服务端",
+  "description": "3D 黑胶唱片架音乐播放器 —— Three.js 前端 + 零框架 Node 服务端，无构建步骤",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "add-artist": "node scripts/add-artist.js"
   },
-  "keywords": [],
+  "keywords": [
+    "three.js",
+    "webgl",
+    "music-player",
+    "vinyl",
+    "netease-cloud-music",
+    "vanilla-js",
+    "no-build"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Justinchengpepe/music-player.git"
+  },
   "author": "",
   "license": "ISC",
   "type": "commonjs",
