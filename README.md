@@ -6,6 +6,8 @@
 
 内置 **30 位说唱 / R&B 艺人**、**156 张正式录音室专辑**。
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Justinchengpepe/music-player)
+
 ![3D 唱片架](assets/shelf.png)
 
 ---
@@ -49,7 +51,43 @@
 
 ---
 
-## 快速开始
+## 怎么跑起来
+
+这个项目**不是静态网页**，必须有一个 Node 服务在跑。三种用法，按省事程度排：
+
+| 方式 | 适合谁 | 代价 |
+|---|---|---|
+| **Codespaces 云端运行** | 只想看看效果，或想改点代码试试 | 一个 GitHub 账号，零安装 |
+| **本地运行** | 想长期自己用，想加自己的歌手 | 装 Node.js 18+（推荐 22） |
+| **部署到公网** | 想让别人点个链接就能用 | 一台服务器，或一个 Railway 账号 |
+
+### 方式一：Codespaces（零安装）
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Justinchengpepe/music-player)
+
+点按钮 → 等容器初始化（首次约 1–2 分钟，会自动跑 `npm install`）→ 服务自动启动，
+浏览器弹出 8088 端口预览，那就是完整可用的页面。
+
+> 服务冷启动要加载网易云模块，**首次约 30 秒**。如果预览打开时是报错页，
+> 等半分钟刷新一下就好。
+
+如果预览没自动弹出，在下方终端手动跑一次：
+
+```bash
+npm start
+```
+
+日常维护：
+
+```bash
+tail -f /tmp/vinyl-archive.log            # 看运行日志
+pkill -f 'node server.js' && npm start    # 重启
+```
+
+> 免费账号每月 120 核时额度，容器闲置 30 分钟自动休眠，重新打开会再拉起一次。
+> Codespaces 的机器在海外，网易云接口偶尔会慢 —— 加载不出来时可以设 `NETEASE_PROXY` 走代理。
+
+### 方式二：本地运行
 
 ```bash
 git clone https://github.com/Justinchengpepe/music-player.git
@@ -58,14 +96,28 @@ npm install
 npm start
 ```
 
-浏览器打开 **http://localhost:8088** 即可。需要 Node.js 18+（推荐 20）。
+浏览器打开 **http://localhost:8088** 即可。
 
-> **这不是静态网页。**
-> 页面要调网易云 API，浏览器直连会被 CORS 挡死，必须有 Node 服务在后端转发。
-> 所以它**不能**部署到 GitHub Pages，也**不能**直接双击 `index.html` 打开（会白屏）——
-> 必须把仓库 clone 下来跑起来。
->
-> 首次启动要加载网易云模块（9MB / 400+ 文件），冷启动约 30–60 秒属正常现象。
+### 方式三：部署到公网
+
+见下方 [部署](#部署) 章节。
+
+---
+
+### 为什么不能部署到 GitHub Pages？
+
+**因为 GitHub 在这里的角色是「代码托管」，不是「运行环境」。**
+
+页面里那 11 个 `/api/*` 接口（艺人列表、专辑曲目、播放地址、歌词、扫码登录…）
+都必须由 `server.js` 在服务端转发给网易云 —— 浏览器直连会被 CORS 挡死。
+而 GitHub Pages 只会把 HTML / CSS / JS 原样发出去，**不执行任何 Node 代码**，
+所以传上去之后所有接口都会 404，页面直接白屏。
+
+同理，**直接双击 `index.html` 打开也会白屏**，它必须由 `server.js` 托管。
+
+想让别人点开链接就能用，得走上面的方式三。
+
+> 首次启动要加载网易云模块（9MB / 400+ 文件），**冷启动约 30–60 秒属正常现象**。
 
 ---
 
@@ -98,6 +150,7 @@ npm start
 ├── js/
 │   └── three.module.js    # Three.js r160 运行时（本地内置，不走 CDN）
 ├── assets/                # README 配图
+├── .devcontainer/         # Codespaces 配置：devcontainer.json + start.sh
 ├── deploy.sh              # Ubuntu / Oracle Cloud 一键部署脚本
 ├── .railwayignore         # Railway 部署忽略规则
 ├── musickit.example.json  # MusicKit 配置模板
@@ -230,7 +283,7 @@ cp musickit.example.json musickit.json
 | 方法 | 路径 | 说明 |
 |---|---|---|
 | GET | `/api/artists` | 艺人列表（开场轮播用），含自动补全的 `color` / `avatar` |
-| GET | `/api/artist/albums?id=<艺人ID>` | 某位艺人的专辑（含 iTunes 高清封面）与未匹配清单 `unmatched` |
+| GET | `/api/artist/albums?id=<艺人ID>` | 某位艺人的专辑：`hotAlbums`（含 iTunes 高清封面）+ 未匹配清单 `unmatched` |
 | GET | `/api/album?id=<专辑ID>` | 专辑详情与曲目列表 |
 | GET | `/api/song/url?id=<歌曲ID>` | 歌曲播放地址（带 Cookie 时返回 999kbps） |
 | GET | `/api/lyric?id=<歌曲ID>` | 歌词 |
@@ -262,6 +315,11 @@ cd /opt/vinyl-player && bash deploy.sh
 > 只需确认 `musickit.json`（你的 Apple 私钥）没有被一并上传 —— 它已在 `.gitignore` 中排除。
 >
 > 建议启用 HTTPS：Cookie 是通过请求头传给服务端的，明文 HTTP 下可能被中间人截获。
+
+> **⚠️ 长期公开服务请先加限流。**
+> 当前 `server.js` 对 `/api/*` 没有任何速率限制，也不校验来源 —— 一旦公开，
+> 任何人都能拿你的服务器当网易云代理刷接口，流量和封 IP 的代价都算在你头上。
+> 小范围分享给朋友问题不大；如果是长期对外的服务，建议先加一层按 IP 的限流。
 
 ---
 

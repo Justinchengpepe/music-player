@@ -1,0 +1,23 @@
+{
+  "name": "Vinyl Archive",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:5-22-bookworm",
+
+  "postCreateCommand": "npm install",
+  "postStartCommand": "nohup bash .devcontainer/start.sh > /tmp/vinyl-archive.log 2>&1 &",
+
+  "forwardPorts": [8088],
+  "portsAttributes": {
+    "8088": {
+      "label": "Vinyl Archive",
+      "onAutoForward": "openBrowser"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  }
+}
